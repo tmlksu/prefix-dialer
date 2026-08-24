@@ -59,10 +59,10 @@ class SettingsStore(context: Context) {
     /**
      * エクスポート用の JSON 文字列。
      *
-     * 端末固有の値（SIM の購読 ID）は他の端末で意味を持たないため含めない。
+     * 端末固有の値（回線の識別子）は他の端末で意味を持たないため含めない。
      */
     fun exportJson(): String =
-        SettingsJson.encode(load().copy(disabledSubscriptionIds = emptySet()))
+        SettingsJson.encode(load().copy(disabledPhoneAccountIds = emptySet()))
 
     /**
      * JSON 文字列から設定を復元して保存する。
@@ -78,7 +78,7 @@ class SettingsStore(context: Context) {
             // どちらの場合も「変更なし」で正しい。
             return Json.parse(text) != null
         }
-        save(imported.copy(disabledSubscriptionIds = current.disabledSubscriptionIds))
+        save(imported.copy(disabledPhoneAccountIds = current.disabledPhoneAccountIds))
         return true
     }
 

@@ -34,12 +34,17 @@ data class Settings(
     val disableWhileRoaming: Boolean = true,
 
     /**
-     * プレフィックスを適用しない SIM の購読 ID。
+     * プレフィックスを適用しない回線の `PhoneAccountHandle.id`。
      *
      * 既定は空＝全 SIM で有効。デュアル SIM で契約していない回線に付けると
      * 課金事故になるため、UI から個別に OFF にできる。
+     *
+     * 購読 ID(subscriptionId) ではなくこの ID を鍵にしているのは、
+     * `CallRedirectionService.onPlaceCall` が受け取る値そのものだから。
+     * 判定のたびに `READ_PHONE_STATE` を必要とする API を呼ばずに済む
+     * （権限が要るのは設定画面で回線名を表示するときだけ）。
      */
-    val disabledSubscriptionIds: Set<Int> = emptySet(),
+    val disabledPhoneAccountIds: Set<String> = emptySet(),
 
     /**
      * 個別に除外する番号（数字のみに正規化して保持）。
@@ -53,14 +58,14 @@ data class Settings(
 ) {
 
     /**
-     * 指定の SIM でプレフィックスを適用してよいか。
+     * 指定の回線でプレフィックスを適用してよいか。
      *
-     * @param subscriptionId 発信に使われる SIM の購読 ID。不明なら null
+     * @param phoneAccountId 発信に使われる回線の `PhoneAccountHandle.id`。不明なら null
      */
-    fun isEnabledForSubscription(subscriptionId: Int?): Boolean {
+    fun isEnabledForPhoneAccount(phoneAccountId: String?): Boolean {
         if (!ruleSet.enabled) return false
-        if (subscriptionId == null) return true
-        return subscriptionId !in disabledSubscriptionIds
+        if (phoneAccountId == null) return true
+        return phoneAccountId !in disabledPhoneAccountIds
     }
 
     /** [number] が個別除外に登録されているか。 */

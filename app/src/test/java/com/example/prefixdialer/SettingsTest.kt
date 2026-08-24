@@ -15,9 +15,9 @@ class SettingsTest {
     private fun dial(
         raw: String,
         settings: Settings = base,
-        subscriptionId: Int? = null,
+        phoneAccountId: String? = null,
         isRoaming: Boolean = false,
-    ) = RuleEngine.buildDialNumber(raw, settings, subscriptionId, isRoaming)
+    ) = RuleEngine.buildDialNumber(raw, settings, phoneAccountId, isRoaming)
 
     @Test
     fun `既定の設定では通常の番号にプレフィックスが付く`() {
@@ -40,9 +40,9 @@ class SettingsTest {
 
     @Test
     fun `既定では全SIMで有効`() {
-        assertTrue(Settings().disabledSubscriptionIds.isEmpty())
-        assertTrue(Settings().isEnabledForSubscription(1))
-        assertTrue(Settings().isEnabledForSubscription(99))
+        assertTrue(Settings().disabledPhoneAccountIds.isEmpty())
+        assertTrue(Settings().isEnabledForPhoneAccount("sim1"))
+        assertTrue(Settings().isEnabledForPhoneAccount("sim99"))
     }
 
     // ------------------------------------------------------------------
@@ -66,22 +66,22 @@ class SettingsTest {
 
     @Test
     fun `無効化したSIMからの発信には付かない`() {
-        val settings = base.copy(disabledSubscriptionIds = setOf(2))
-        assertNull(dial(MOBILE, settings, subscriptionId = 2))
-        assertEquals("0063$MOBILE", dial(MOBILE, settings, subscriptionId = 1))
+        val settings = base.copy(disabledPhoneAccountIds = setOf("sim2"))
+        assertNull(dial(MOBILE, settings, phoneAccountId = "sim2"))
+        assertEquals("0063$MOBILE", dial(MOBILE, settings, phoneAccountId = "sim1"))
     }
 
     @Test
     fun `SIMが不明な場合は適用する`() {
-        // 端末やロールの制約で購読 ID が取れないことがある。現行の挙動を維持する。
-        val settings = base.copy(disabledSubscriptionIds = setOf(2))
-        assertEquals("0063$MOBILE", dial(MOBILE, settings, subscriptionId = null))
+        // 端末やロールの制約で回線の識別子が取れないことがある。現行の挙動を維持する。
+        val settings = base.copy(disabledPhoneAccountIds = setOf("sim2"))
+        assertEquals("0063$MOBILE", dial(MOBILE, settings, phoneAccountId = null))
     }
 
     @Test
     fun `マスタースイッチOFFはSIM指定より優先される`() {
         val settings = base.copy(ruleSet = Presets.gCall.copy(enabled = false))
-        assertNull(dial(MOBILE, settings, subscriptionId = 1))
+        assertNull(dial(MOBILE, settings, phoneAccountId = "sim1"))
     }
 
     // ------------------------------------------------------------------

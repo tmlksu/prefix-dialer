@@ -38,7 +38,7 @@ object SettingsJson {
     private const val KEY_SUFFIX = "suffix"
     private const val KEY_CALL_LOG_REWRITE = "callLogRewriteEnabled"
     private const val KEY_DISABLE_ROAMING = "disableWhileRoaming"
-    private const val KEY_DISABLED_SUBS = "disabledSubscriptionIds"
+    private const val KEY_DISABLED_ACCOUNTS = "disabledPhoneAccountIds"
     private const val KEY_EXCLUDED = "excludedNumbers"
     private const val KEY_RECORD_LIMIT = "callRecordLimit"
 
@@ -58,7 +58,7 @@ object SettingsJson {
         KEY_RULE_SET to settings.ruleSet.toJson(),
         KEY_CALL_LOG_REWRITE to Json.of(settings.callLogRewriteEnabled),
         KEY_DISABLE_ROAMING to Json.of(settings.disableWhileRoaming),
-        KEY_DISABLED_SUBS to Json.arr(settings.disabledSubscriptionIds.sorted().map { Json.of(it) }),
+        KEY_DISABLED_ACCOUNTS to Json.arr(settings.disabledPhoneAccountIds.sorted().map { Json.of(it) }),
         KEY_EXCLUDED to Json.arr(settings.excludedNumbers.sorted().map { Json.of(it) }),
         KEY_RECORD_LIMIT to Json.of(settings.callRecordLimit),
     )
@@ -116,8 +116,8 @@ object SettingsJson {
         ruleSet = root[KEY_RULE_SET]?.toRuleSet() ?: fallback.ruleSet,
         callLogRewriteEnabled = root.bool(KEY_CALL_LOG_REWRITE) ?: fallback.callLogRewriteEnabled,
         disableWhileRoaming = root.bool(KEY_DISABLE_ROAMING) ?: fallback.disableWhileRoaming,
-        disabledSubscriptionIds = root.array(KEY_DISABLED_SUBS)
-            ?.mapNotNull { it.asInt() }?.toSet() ?: fallback.disabledSubscriptionIds,
+        disabledPhoneAccountIds = root.array(KEY_DISABLED_ACCOUNTS)
+            ?.mapNotNull { it.asString() }?.toSet() ?: fallback.disabledPhoneAccountIds,
         excludedNumbers = root.array(KEY_EXCLUDED)
             ?.mapNotNull { it.asString() }
             ?.map { Settings.normalizeNumber(it) }

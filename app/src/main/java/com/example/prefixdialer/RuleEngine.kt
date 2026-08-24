@@ -38,13 +38,13 @@ object RuleEngine {
      *
      * @param raw ダイヤラーから渡された生の番号文字列
      * @param settings 現在の設定
-     * @param subscriptionId 発信に使われる SIM の購読 ID。不明なら null
+     * @param phoneAccountId 発信に使われる回線の `PhoneAccountHandle.id`。不明なら null
      * @param isRoaming ローミング中かどうか
      */
     fun buildDialNumber(
         raw: String?,
         settings: Settings,
-        subscriptionId: Int? = null,
+        phoneAccountId: String? = null,
         isRoaming: Boolean = false,
     ): String? {
         // ローミング中は国内向けの事業者プレフィックスが意味を持たない。
@@ -52,7 +52,7 @@ object RuleEngine {
         if (isRoaming && settings.disableWhileRoaming) return null
 
         // 契約していない回線に付けると課金事故になるため、SIM ごとに無効化できる。
-        if (!settings.isEnabledForSubscription(subscriptionId)) return null
+        if (!settings.isEnabledForPhoneAccount(phoneAccountId)) return null
 
         return buildDialNumber(raw, settings.ruleSet, settings.excludedNumbers)
     }

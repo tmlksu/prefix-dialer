@@ -1,156 +1,256 @@
 package com.example.prefixdialer
 
-import android.Manifest
-import android.app.role.RoleManager
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.PowerManager
-import android.provider.Settings
-import android.view.Gravity
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import com.example.prefixdialer.ui.AdvancedScreen
+import com.example.prefixdialer.ui.ExclusionsScreen
+import com.example.prefixdialer.ui.HomeScreen
+import com.example.prefixdialer.ui.PrefixDialerTheme
+import com.example.prefixdialer.ui.RulesScreen
+
+/** 画面。数が少ないのでナビゲーションライブラリは入れず、状態で切り替える。 */
+private enum class Screen(val title: String) {
+    HOME("Prefix Dialer"),
+    RULES("書き換えルール"),
+    EXCLUSIONS("除外する番号"),
+    ADVANCED("詳細設定"),
+}
 
 /**
- * セットアップ画面。以下を順に有効化してもらう:
- *  1. 通話リダイレクトのロール (ROLE_CALL_REDIRECTION)
- *  2. 通話履歴・連絡先・通知のランタイム権限
- *  3. バッテリー最適化からの除外（One UI 対策）
+ * 設定画面のホスト。
+ *
+ * 状態は 2 つだけ。永続化された [Settings] と、OS 側の [SystemStatus]。
+ * 後者は権限やロールの取得後・画面復帰時に読み直す（他アプリにロールを
+ * 奪われた場合など、アプリの外で変わりうるため）。
  */
-class MainActivity : AppCompatActivity() {
-
-    private lateinit var status: TextView
+class MainActivity : ComponentActivity() {
 
     private val settingsStore: SettingsStore by lazy { SettingsStore(this) }
 
+    private var settings by mutableStateOf(Settings())
+    private var status by mutableStateOf(SystemStatus())
+    private var lines by mutableStateOf(emptyList<PhoneAccounts.Line>())
+    private var hasPhoneStatePermission by mutableStateOf(false)
+
     private val roleLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
-    ) { refreshStatus() }
+    ) { refreshSystemState() }
 
-    private val permsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-    ) { refreshStatus() }
-
-    private val settingsLauncher = registerForActivityResult(
+    private val systemSettingsLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
-    ) { refreshStatus() }
+    ) { refreshSystemState() }
 
+    /**
+     * 通話履歴まわりの権限。許可されて初めて履歴書き換えを有効にする。
+     * 拒否された場合は設定を変えない（「有効なのに動かない」状態を作らないため）。
+     */
+    private val callLogPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions(),
+    ) { granted ->
+        refreshSystemState()
+        val essential = listOf(
+            android.Manifest.permission.READ_CALL_LOG,
+            android.Manifest.permission.WRITE_CALL_LOG,
+        )
+        if (essential.all { granted[it] == true }) {
+            updateSettings { it.copy(callLogRewriteEnabled = true) }
+        } else {
+            toast("通話履歴の権限が無いため、履歴の書き換えは有効にできません")
+        }
+    }
+
+    private val phoneStatePermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { refreshSystemState() }
+
+    private val exportLauncher = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri ->
+        if (uri == null) return@registerForActivityResult
+        val ok = runCatching {
+            contentResolver.openOutputStream(uri)?.use {
+                it.write(settingsStore.exportJson().toByteArray())
+            } ?: error("could not open $uri")
+        }.isSuccess
+        toast(if (ok) "設定を書き出しました" else "書き出しに失敗しました")
+    }
+
+    private val importLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        if (uri == null) return@registerForActivityResult
+        val text = runCatching {
+            contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() }
+        }.getOrNull()
+
+        if (text == null) {
+            toast("ファイルを読めませんでした")
+            return@registerForActivityResult
+        }
+        if (settingsStore.importJson(text)) {
+            settings = settingsStore.load()
+            toast("設定を読み込みました")
+        } else {
+            toast("設定の形式が正しくありません")
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(48, 48, 48, 48)
-        }
+        settings = settingsStore.load()
 
-        val title = TextView(this).apply {
-            text = "Prefix Dialer"
-            textSize = 24f
-            setTypeface(typeface, android.graphics.Typeface.BOLD)
-        }
-        root.addView(title)
-        root.addView(spacer())
+        setContent {
+            var screen by remember { mutableStateOf(Screen.HOME) }
 
-        status = TextView(this).apply { textSize = 15f }
-        root.addView(status)
+            PrefixDialerTheme {
+                // 設定画面から戻るときはホームへ。端末の戻るボタンでいきなり閉じさせない。
+                BackHandler(enabled = screen != Screen.HOME) { screen = Screen.HOME }
 
-        root.addView(spacer())
-        root.addView(button("1. 通話リダイレクトを有効化") { requestRedirectionRole() })
-        root.addView(button("2. 権限を許可（通話履歴・連絡先・通知）") { requestPermissions() })
-        root.addView(button("3. バッテリー最適化を解除") { requestIgnoreBattery() })
-        root.addView(spacer())
-        root.addView(button("状態を更新") { refreshStatus() })
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text(screen.title) },
+                            navigationIcon = {
+                                if (screen != Screen.HOME) {
+                                    IconButton(onClick = { screen = Screen.HOME }) {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "戻る",
+                                        )
+                                    }
+                                }
+                            },
+                        )
+                    },
+                ) { innerPadding ->
+                    val contentModifier = Modifier.padding(innerPadding)
+                    when (screen) {
+                        Screen.HOME -> HomeScreen(
+                            settings = settings,
+                            status = status,
+                            onMasterSwitchChange = { enabled ->
+                                updateSettings {
+                                    it.copy(ruleSet = it.ruleSet.copy(enabled = enabled))
+                                }
+                            },
+                            onRequestRole = ::requestRedirectionRole,
+                            onOpenRules = { screen = Screen.RULES },
+                            onOpenExclusions = { screen = Screen.EXCLUSIONS },
+                            onOpenAdvanced = { screen = Screen.ADVANCED },
+                            modifier = contentModifier,
+                        )
 
-        setContentView(ScrollView(this).apply { addView(root) })
+                        Screen.RULES -> RulesScreen(
+                            ruleSet = settings.ruleSet,
+                            onRuleSetChange = { ruleSet ->
+                                updateSettings { it.copy(ruleSet = ruleSet.renamedIfEdited()) }
+                            },
+                            modifier = contentModifier,
+                        )
 
-        // Android 15 のエッジツーエッジ対策: システムバー分の余白を確保して見切れを防ぐ
-        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(48, 48 + bars.top, 48, 48 + bars.bottom)
-            insets
+                        Screen.EXCLUSIONS -> ExclusionsScreen(
+                            excludedNumbers = settings.excludedNumbers,
+                            onChange = { numbers ->
+                                updateSettings { it.copy(excludedNumbers = numbers) }
+                            },
+                            modifier = contentModifier,
+                        )
+
+                        Screen.ADVANCED -> AdvancedScreen(
+                            settings = settings,
+                            status = status,
+                            lines = lines,
+                            hasPhoneStatePermission = hasPhoneStatePermission,
+                            onSettingsChange = { updated -> updateSettings { updated } },
+                            onEnableCallLogRewrite = {
+                                callLogPermissionLauncher.launch(SystemStatus.callLogPermissions())
+                            },
+                            onRequestBatteryExemption = {
+                                systemSettingsLauncher.launch(
+                                    SystemStatus.ignoreBatteryOptimizationsIntent(this),
+                                )
+                            },
+                            onRequestPhoneStatePermission = {
+                                phoneStatePermissionLauncher.launch(PhoneAccounts.PERMISSION)
+                            },
+                            onExport = { exportLauncher.launch(EXPORT_FILE_NAME) },
+                            onImport = {
+                                importLauncher.launch(arrayOf("application/json", "text/plain"))
+                            },
+                            modifier = contentModifier,
+                        )
+                    }
+                }
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        refreshStatus()
+        // ロールは他アプリに奪われることがあり、権限も設定アプリ側で取り消せる。
+        // アプリの外で変わりうる状態なので、復帰のたびに読み直す。
+        refreshSystemState()
+        settings = settingsStore.load()
+    }
+
+    private fun refreshSystemState() {
+        status = SystemStatus.read(this)
+        hasPhoneStatePermission = PhoneAccounts.hasPermission(this)
+        lines = PhoneAccounts.list(this)
     }
 
     private fun requestRedirectionRole() {
-        val rm = getSystemService(RoleManager::class.java) ?: return
-        if (rm.isRoleAvailable(RoleManager.ROLE_CALL_REDIRECTION) &&
-            !rm.isRoleHeld(RoleManager.ROLE_CALL_REDIRECTION)
-        ) {
-            roleLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_CALL_REDIRECTION))
-        } else {
-            refreshStatus()
+        val intent: Intent? = SystemStatus.requestRoleIntent(this)
+        if (intent == null) {
+            refreshSystemState()
+            return
         }
+        roleLauncher.launch(intent)
     }
 
-    private fun requestPermissions() {
-        val perms = buildList {
-            add(Manifest.permission.READ_CALL_LOG)
-            add(Manifest.permission.WRITE_CALL_LOG)
-            add(Manifest.permission.READ_CONTACTS)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                add(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }.toTypedArray()
-        permsLauncher.launch(perms)
+    private fun updateSettings(transform: (Settings) -> Settings) {
+        settings = settingsStore.update(transform)
     }
 
-    private fun requestIgnoreBattery() {
-        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-            data = Uri.parse("package:$packageName")
-        }
-        settingsLauncher.launch(intent)
+    private fun toast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
-    private fun refreshStatus() {
-        val rm = getSystemService(RoleManager::class.java)
-        val hasRole = rm?.isRoleHeld(RoleManager.ROLE_CALL_REDIRECTION) == true
-        val hasPerms = listOf(
-            Manifest.permission.READ_CALL_LOG,
-            Manifest.permission.WRITE_CALL_LOG,
-            Manifest.permission.READ_CONTACTS,
-        ).all {
-            ContextCompat.checkSelfPermission(this, it) ==
-                android.content.pm.PackageManager.PERMISSION_GRANTED
-        }
-        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-        val batteryOk = pm.isIgnoringBatteryOptimizations(packageName)
-
-        status.text = buildString {
-            appendLine("プレフィックス: ${settingsStore.load().ruleSet.prefixes.joinToString(" / ").ifEmpty { "未設定" }}")
-            appendLine()
-            appendLine("${mark(hasRole)} 通話リダイレクト")
-            appendLine("${mark(hasPerms)} 通話履歴・連絡先の権限")
-            appendLine("${mark(batteryOk)} バッテリー最適化の解除")
-            appendLine()
-            if (hasRole && hasPerms && batteryOk) {
-                append("準備完了。国内の携帯・固定電話への発信に自動でプレフィックスが付きます。")
-            } else {
-                append("上のボタンで未完了の項目を有効化してください。")
-            }
-        }
+    /**
+     * プリセットから変更されていれば「カスタム」に改名する。
+     *
+     * プリセット名のまま中身だけ違う状態になると、ユーザーが自分の設定内容を
+     * 誤解する。名前と中身を一致させる。
+     */
+    private fun RuleSet.renamedIfEdited(): RuleSet {
+        val matchesPreset = Presets.all.any { it.name == name && it.rules == rules }
+        return if (matchesPreset || name == Presets.custom.name) this else copy(name = "カスタム")
     }
 
-    private fun mark(ok: Boolean) = if (ok) "✅" else "⬜"
-
-    private fun spacer() = TextView(this).apply { height = 48 }
-
-    private fun button(label: String, onClick: () -> Unit) = Button(this).apply {
-        text = label
-        gravity = Gravity.START or Gravity.CENTER_VERTICAL
-        setOnClickListener { onClick() }
+    companion object {
+        private const val EXPORT_FILE_NAME = "prefix-dialer-settings.json"
     }
 }

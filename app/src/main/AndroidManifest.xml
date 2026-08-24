@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- 回線(SIM)の一覧と表示名の取得。設定画面で回線ごとの ON/OFF を出すためだけに使う。
+         プレフィックスを付けるかどうかの判定には不要（onPlaceCall が PhoneAccountHandle を直接渡すため）。 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <!-- 以下は「通話履歴の書き換え」を有効にした場合のみ実行時に要求する。
+         インストール直後には要求しない。 -->
     <!-- 通話履歴の読み書き（発信後にprefixを元番号へ戻すため） -->
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
