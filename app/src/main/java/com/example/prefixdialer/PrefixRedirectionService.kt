@@ -9,10 +9,14 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 
 /**
- * 発信直前に呼ばれ、対象番号なら 0063 プレフィックスを付けて発信し直す。
- * 両SIM共通ロジックなので PhoneAccountHandle は判定に使わない。
+ * 発信直前に呼ばれ、設定に従って番号を書き換えてから発信し直す。
+ *
+ * このコールバックの応答が遅れると発信そのものが遅れるため、重い処理はしない。
+ * 設定は [SettingsStore] がメモリに保持しているので、毎回の読み出しは I/O にならない。
  */
 class PrefixRedirectionService : CallRedirectionService() {
+
+    private val settingsStore: SettingsStore by lazy { SettingsStore(this) }
 
     override fun onPlaceCall(
         handle: Uri,
@@ -20,7 +24,7 @@ class PrefixRedirectionService : CallRedirectionService() {
         allowInteractiveResponse: Boolean,
     ) {
         val original = handle.schemeSpecificPart
-        val dial = PhoneNumberPrefixer.buildDialNumber(original)
+        val dial = RuleEngine.buildDialNumber(original, settingsStore.load())
 
         if (dial == null) {
             placeCallUnmodified()

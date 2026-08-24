@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var status: TextView
 
+    private val settingsStore: SettingsStore by lazy { SettingsStore(this) }
+
     private val roleLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) { refreshStatus() }
@@ -128,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         val batteryOk = pm.isIgnoringBatteryOptimizations(packageName)
 
         status.text = buildString {
-            appendLine("プレフィックス: ${PhoneNumberPrefixer.PREFIX}")
+            appendLine("プレフィックス: ${settingsStore.load().ruleSet.prefixes.joinToString(" / ").ifEmpty { "未設定" }}")
             appendLine()
             appendLine("${mark(hasRole)} 通話リダイレクト")
             appendLine("${mark(hasPerms)} 通話履歴・連絡先の権限")

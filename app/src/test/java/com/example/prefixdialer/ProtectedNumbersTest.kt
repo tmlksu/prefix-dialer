@@ -23,6 +23,8 @@ import org.junit.Test
  */
 class ProtectedNumbersTest {
 
+    private fun dial(raw: String) = RuleEngine.buildDialNumber(raw, Presets.default)
+
     // ------------------------------------------------------------------
     // 中核の不変条件: 文書化した特番は 1 つ残らず保護されること
     // ------------------------------------------------------------------
@@ -42,7 +44,7 @@ class ProtectedNumbersTest {
     @Test
     fun `文書化された特番はプレフィックスが付かない`() {
         val rewritten = ProtectedNumbers.DOCUMENTED_SPECIAL_NUMBERS.keys
-            .mapNotNull { num -> PhoneNumberPrefixer.buildDialNumber(num)?.let { num to it } }
+            .mapNotNull { num -> dial(num)?.let { num to it } }
 
         assertTrue(
             "特番が書き換えられた: " + rewritten.joinToString { "${it.first} -> ${it.second}" },
@@ -58,7 +60,7 @@ class ProtectedNumbersTest {
     fun `3桁番号は000から999まで一つも書き換えられない`() {
         val rewritten = (0..999)
             .map { it.toString().padStart(3, '0') }
-            .mapNotNull { num -> PhoneNumberPrefixer.buildDialNumber(num)?.let { num to it } }
+            .mapNotNull { num -> dial(num)?.let { num to it } }
 
         assertTrue(
             "3桁番号が書き換えられた: " + rewritten.joinToString { "${it.first} -> ${it.second}" },
@@ -72,7 +74,7 @@ class ProtectedNumbersTest {
         val rewritten = (0..99)
             .flatMap { listOf(it.toString(), it.toString().padStart(2, '0')) }
             .distinct()
-            .mapNotNull { num -> PhoneNumberPrefixer.buildDialNumber(num)?.let { num to it } }
+            .mapNotNull { num -> dial(num)?.let { num to it } }
 
         assertTrue(
             "短い番号が書き換えられた: " + rewritten.joinToString { "${it.first} -> ${it.second}" },
@@ -89,7 +91,7 @@ class ProtectedNumbersTest {
         // #7119 等の既知の窓口に加え、将来追加される # 番号も一括で守れていること
         for (n in listOf("#7119", "#8000", "#9110", "#8103", "#8891", "#0000", "#9999", "#31#09012345678")) {
             assertTrue("$n が保護されていない", ProtectedNumbers.isProtected(n))
-            assertNull("$n が書き換えられた", PhoneNumberPrefixer.buildDialNumber(n))
+            assertNull("$n が書き換えられた", dial(n))
         }
     }
 
@@ -97,7 +99,7 @@ class ProtectedNumbersTest {
     fun `アスタリスクを含む番号は保護される`() {
         for (n in listOf("*99", "*67", "*310912345678")) {
             assertTrue("$n が保護されていない", ProtectedNumbers.isProtected(n))
-            assertNull("$n が書き換えられた", PhoneNumberPrefixer.buildDialNumber(n))
+            assertNull("$n が書き換えられた", dial(n))
         }
     }
 
@@ -106,7 +108,7 @@ class ProtectedNumbersTest {
         // 代表番号 + 内線。プレフィックス付与で DTMF の送出が崩れないよう 1.0 では触らない
         for (n in listOf("0312345678,,,123", "0312345678;123", "0312345678p123", "0312345678w9")) {
             assertTrue("$n が保護されていない", ProtectedNumbers.isProtected(n))
-            assertNull("$n が書き換えられた", PhoneNumberPrefixer.buildDialNumber(n))
+            assertNull("$n が書き換えられた", dial(n))
         }
     }
 
@@ -118,7 +120,7 @@ class ProtectedNumbersTest {
     fun `184と186で始まる番号は素通しする`() {
         for (n in listOf("18409012345678", "18609012345678", "1840312345678", "184", "186")) {
             assertTrue("$n が保護されていない", ProtectedNumbers.isProtected(n))
-            assertNull("$n が書き換えられた", PhoneNumberPrefixer.buildDialNumber(n))
+            assertNull("$n が書き換えられた", dial(n))
         }
     }
 
@@ -130,7 +132,7 @@ class ProtectedNumbersTest {
     fun `国番号付きで書かれた特番も保護される`() {
         for (n in listOf("+81110", "+81119", "+81118", "+81117")) {
             assertTrue("$n が保護されていない", ProtectedNumbers.isProtected(n))
-            assertNull("$n が書き換えられた", PhoneNumberPrefixer.buildDialNumber(n))
+            assertNull("$n が書き換えられた", dial(n))
         }
     }
 
@@ -138,7 +140,7 @@ class ProtectedNumbersTest {
     fun `区切り記号で書かれた特番も保護される`() {
         for (n in listOf("1-1-0", "1 1 9", "(118)", " 110 ")) {
             assertTrue("$n が保護されていない", ProtectedNumbers.isProtected(n))
-            assertNull("$n が書き換えられた", PhoneNumberPrefixer.buildDialNumber(n))
+            assertNull("$n が書き換えられた", dial(n))
         }
     }
 
@@ -155,9 +157,9 @@ class ProtectedNumbersTest {
 
     @Test
     fun `ガード導入後も通常の番号にはプレフィックスが付く`() {
-        assertEquals("0063" + "09012345678", PhoneNumberPrefixer.buildDialNumber("09012345678"))
-        assertEquals("0063" + "0312345678", PhoneNumberPrefixer.buildDialNumber("0312345678"))
-        assertEquals("0063" + "05012345678", PhoneNumberPrefixer.buildDialNumber("05012345678"))
+        assertEquals("0063" + "09012345678", dial("09012345678"))
+        assertEquals("0063" + "0312345678", dial("0312345678"))
+        assertEquals("0063" + "05012345678", dial("05012345678"))
     }
 
     // ------------------------------------------------------------------

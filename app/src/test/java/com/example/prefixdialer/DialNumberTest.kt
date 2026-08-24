@@ -5,12 +5,12 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 /**
- * buildDialNumber の網羅テスト。
+ * 既定のプリセットに対する buildDialNumber の網羅テスト。
  * libphonenumber を使うだけなので JVM 上のローカルユニットテストで動く。
  */
-class PhoneNumberPrefixerTest {
+class DialNumberTest {
 
-    private fun dial(raw: String) = PhoneNumberPrefixer.buildDialNumber(raw)
+    private fun dial(raw: String) = RuleEngine.buildDialNumber(raw, Presets.default)
 
     // --- プレフィックスを付ける（国内の携帯・固定・IP電話） -----------------
 
