@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 通話履歴の読み書き（発信後にprefixを元番号へ戻すため） -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <!-- 履歴の表示名を連絡先から補完するため -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!-- 履歴書き換えを短命フォアグラウンドサービスで確実に走らせる -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SHORT_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@android:drawable/sym_action_call"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.PrefixDialer">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 発信直前に番号を書き換えるサービス -->
+        <service
+            android:name=".PrefixRedirectionService"
+            android:exported="true"
+            android:permission="android.permission.BIND_CALL_REDIRECTION_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallRedirectionService" />
+            </intent-filter>
+        </service>
+
+        <!-- 発信後にCallLogのエントリを元番号へ戻すサービス -->
+        <service
+            android:name=".CallLogRewriteService"
+            android:exported="false"
+            android:foregroundServiceType="shortService" />
+
+    </application>
+</manifest>
