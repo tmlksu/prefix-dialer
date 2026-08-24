@@ -82,7 +82,7 @@ class CallLogRewriteService : Service() {
                 }
             }
         } catch (e: SecurityException) {
-            Log.w(TAG, "READ/WRITE_CALL_LOG が未許可のため書き換えできません", e)
+            Log.w(TAG, "call log permissions are missing; cannot rewrite", e)
         } catch (e: Exception) {
             Log.w(TAG, "call log scan failed", e)
         }
@@ -122,14 +122,14 @@ class CallLogRewriteService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
-                    CHANNEL_ID, "通話履歴の整形",
+                    CHANNEL_ID, getString(R.string.notification_channel_call_log),
                     NotificationManager.IMPORTANCE_MIN,
                 ),
             )
         }
         val notification: Notification = Notification.Builder(this, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.sym_action_call)
-            .setContentTitle("通話履歴を整えています")
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
+            .setContentTitle(getString(R.string.notification_call_log_title))
             .setOngoing(true)
             .build()
 

@@ -143,4 +143,7 @@
 
     <!-- Preset names -->
     <string name="preset_custom">Custom</string>
+    <!-- Call log rewrite notification -->
+    <string name="notification_channel_call_log">Call log tidy-up</string>
+    <string name="notification_call_log_title">Tidying up the call log</string>
 </resources>

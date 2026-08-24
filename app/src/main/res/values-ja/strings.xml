@@ -136,4 +136,7 @@
 
     <!-- プリセット名 -->
     <string name="preset_custom">カスタム</string>
+    <!-- 履歴書き換えの通知 -->
+    <string name="notification_channel_call_log">通話履歴の整形</string>
+    <string name="notification_call_log_title">通話履歴を整えています</string>
 </resources>

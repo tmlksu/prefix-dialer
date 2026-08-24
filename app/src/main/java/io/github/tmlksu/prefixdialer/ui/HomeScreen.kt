@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import io.github.tmlksu.prefixdialer.DialRule
 import io.github.tmlksu.prefixdialer.NumberCategory
 import io.github.tmlksu.prefixdialer.R
 import io.github.tmlksu.prefixdialer.RuleAction
@@ -84,7 +85,9 @@ fun HomeScreen(
                 title = stringResource(R.string.info_disabled_title),
                 body = stringResource(R.string.info_disabled_body),
             )
-        } else if (settings.ruleSet.rules.none { it.enabled && it.action is RuleAction.Apply }) {
+        } else if (settings.ruleSet.rules.none { it.isEffective() }) {
+            // プレフィックスが未入力のルールしか無い場合もここに落ちる。
+            // 「ルールはあるのに何も起きない」状態に気づけるようにするため。
             WarningCard(
                 title = stringResource(R.string.warn_no_rules_title),
                 body = stringResource(R.string.warn_no_rules_body),
@@ -170,6 +173,10 @@ fun HomeScreen(
     }
 }
 
+/** 実際にプレフィックスが付くルールか。有効かつプレフィックスが入力済みであること。 */
+private fun DialRule.isEffective(): Boolean =
+    enabled && (action as? RuleAction.Apply)?.prefix?.isNotEmpty() == true
+
 /** 1 つの番号種別について、いま何が起きるかを 1 行で示す。 */
 @Composable
 private fun RuleSummaryRow(settings: Settings, category: NumberCategory) {
@@ -181,7 +188,7 @@ private fun RuleSummaryRow(settings: Settings, category: NumberCategory) {
 
     val description = when {
         !settings.ruleSet.enabled -> stringResource(R.string.summary_paused)
-        action is RuleAction.Apply ->
+        action is RuleAction.Apply && action.prefix.isNotEmpty() ->
             action.prefix + action.leadingZero.apply(sample) + action.suffix
         else -> stringResource(R.string.summary_unchanged)
     }
