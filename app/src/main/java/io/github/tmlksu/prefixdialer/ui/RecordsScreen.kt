@@ -24,9 +24,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.tmlksu.prefixdialer.CallRecord
+import io.github.tmlksu.prefixdialer.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -60,8 +62,7 @@ fun RecordsScreen(
             ),
         ) {
             Text(
-                "このアプリが各発信で何をしたかの記録です。端末内にのみ保存され、" +
-                    "外部には送信されません。通話履歴そのものではありません。",
+                stringResource(R.string.records_description),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(16.dp),
             )
@@ -69,7 +70,7 @@ fun RecordsScreen(
 
         if (records.isEmpty()) {
             Text(
-                "まだ記録がありません。発信すると、ここに結果が残ります。",
+                stringResource(R.string.records_empty),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(16.dp),
             )
@@ -84,7 +85,7 @@ fun RecordsScreen(
             }
 
             TextButton(onClick = onClear, modifier = Modifier.align(Alignment.End)) {
-                Text("記録を消去")
+                Text(stringResource(R.string.records_clear))
             }
         }
 
@@ -102,8 +103,10 @@ private fun RecordRow(record: CallRecord) {
         supportingContent = {
             Text(
                 text = record.dialedNumber
-                    ?.let { "→ $it" }
-                    ?: (record.skipReason?.description ?: "そのまま発信"),
+                    ?.let { stringResource(R.string.records_arrow, it) }
+                    ?: stringResource(
+                        record.skipReason?.labelRes ?: R.string.summary_unchanged,
+                    ),
                 fontFamily = if (record.wasRewritten) FontFamily.Monospace else FontFamily.Default,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -113,14 +116,14 @@ private fun RecordRow(record: CallRecord) {
                 if (record.wasRewritten) {
                     Icon(
                         Icons.Filled.Check,
-                        contentDescription = "プレフィックスあり",
+                        contentDescription = stringResource(R.string.records_rewritten),
                         Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.primary,
                     )
                 } else {
                     Icon(
                         Icons.Filled.Remove,
-                        contentDescription = "プレフィックスなし",
+                        contentDescription = stringResource(R.string.records_not_rewritten),
                         Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

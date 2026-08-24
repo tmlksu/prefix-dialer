@@ -155,9 +155,10 @@ class DialDecisionTest {
     }
 
     @Test
-    fun `すべての理由に説明文がある`() {
-        for (reason in SkipReason.entries) {
-            assertTrue("${reason.name} の説明文が空", reason.description.isNotBlank())
-        }
+    fun `理由の名前が重複していない`() {
+        // 文言は UI 層のリソースに持たせているのでここでは検証しない
+        // （SkipReason は Android 非依存に保つ）。
+        // 表示文言の付け忘れは ui/Labels.kt の when が網羅性チェックで捕まえる。
+        assertEquals(SkipReason.entries.size, SkipReason.entries.map { it.name }.toSet().size)
     }
 }

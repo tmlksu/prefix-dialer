@@ -45,12 +45,21 @@ object Presets {
     )
 
     /**
+     * 組み込みプリセットの識別子。
+     *
+     * [RuleSet.name] は設定として永続化され、エクスポートしたファイルにも入る。
+     * そのためロケールに依存しない固定文字列にする。画面に出す名前は UI 層が
+     * `RuleSet.displayName()` で解決する（端末の言語に追従させるため）。
+     */
+    const val CUSTOM_ID = "Custom"
+
+    /**
      * 空のテンプレート。ユーザーが自分の契約に合わせて設定するための出発点。
      *
      * ルールが空なのでマッチせず、この状態では 1 件もプレフィックスが付かない
      * （＝設定し忘れても勝手に課金が変わることはない）。
      */
-    val custom = RuleSet(name = "カスタム", rules = emptyList())
+    val custom = RuleSet(name = CUSTOM_ID, rules = emptyList())
 
     /** UI のプリセット選択に並べる一覧。 */
     val all: List<RuleSet> = listOf(gCall, custom)

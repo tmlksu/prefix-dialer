@@ -22,6 +22,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,7 @@ import io.github.tmlksu.prefixdialer.DialRule
 import io.github.tmlksu.prefixdialer.LeadingZero
 import io.github.tmlksu.prefixdialer.NumberCategory
 import io.github.tmlksu.prefixdialer.Presets
+import io.github.tmlksu.prefixdialer.R
 import io.github.tmlksu.prefixdialer.RuleAction
 import io.github.tmlksu.prefixdialer.RuleCondition
 import io.github.tmlksu.prefixdialer.RuleSet
@@ -64,10 +66,9 @@ fun RulesScreen(
 
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("プリセット", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.presets_title), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "選ぶと以下の設定がまとめて置き換わります。" +
-                        "収録しているのは動作を確認できた事業者のみです。",
+                    stringResource(R.string.presets_description),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -75,7 +76,7 @@ fun RulesScreen(
                         FilterChip(
                             selected = ruleSet.name == preset.name,
                             onClick = { onRuleSetChange(preset.copy(enabled = ruleSet.enabled)) },
-                            label = { Text(preset.name) },
+                            label = { Text(preset.displayName()) },
                         )
                     }
                 }
@@ -106,20 +107,16 @@ fun RulesScreen(
             ),
         ) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("設定に関わらず書き換えない番号", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "以下はどの設定でもそのまま発信されます。",
+                    stringResource(R.string.never_rewritten_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    stringResource(R.string.never_rewritten_description),
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Text(
-                    """
-                    ・緊急通報と 3 桁の特番（110 / 119 / 118 / 117 / 171 など）
-                    ・# や * を含む番号（#7119 / #8000 / #9110 など）
-                    ・フリーダイヤル 0120 / 0800、ナビダイヤル 0570、有料情報 0990
-                    ・国際発信 010、他社の事業者識別番号 00XY
-                    ・海外の番号
-                    ・発信者番号の通知/非通知プレフィックス 184 / 186 で始まる番号
-                    """.trimIndent(),
+                    stringResource(R.string.never_rewritten_list),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -147,8 +144,10 @@ private fun CategoryRuleEditor(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         ListItem(
-            headlineContent = { Text(category.label()) },
-            supportingContent = { Text(if (enabled) "プレフィックスを付ける" else "そのまま発信") },
+            headlineContent = { Text(stringResource(category.labelRes)) },
+            supportingContent = {
+                Text(stringResource(if (enabled) R.string.rule_on else R.string.rule_off))
+            },
             trailingContent = {
                 Switch(
                     checked = enabled,
@@ -166,19 +165,22 @@ private fun CategoryRuleEditor(
                     val digits = input.filter(Char::isDigit)
                     update { it.withAction(category, apply.copy(prefix = digits)) }
                 },
-                label = { Text("プレフィックス") },
+                label = { Text(stringResource(R.string.rule_prefix_label)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 isError = apply.prefix.isEmpty(),
                 supportingText = if (apply.prefix.isEmpty()) {
-                    { Text("入力するまでプレフィックスは付きません") }
+                    { Text(stringResource(R.string.rule_prefix_empty)) }
                 } else {
                     null
                 },
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Text("元番号の先頭 0 の扱い", style = MaterialTheme.typography.labelLarge)
+            Text(
+                stringResource(R.string.rule_leading_zero_label),
+                style = MaterialTheme.typography.labelLarge,
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 for (option in LeadingZero.entries) {
                     FilterChip(
@@ -186,7 +188,7 @@ private fun CategoryRuleEditor(
                         onClick = {
                             update { it.withAction(category, apply.copy(leadingZero = option)) }
                         },
-                        label = { Text(option.label()) },
+                        label = { Text(stringResource(option.labelRes)) },
                     )
                 }
             }
@@ -208,11 +210,6 @@ private fun CategoryRuleEditor(
     }
 }
 
-private fun LeadingZero.label(): String = when (this) {
-    LeadingZero.KEEP -> "残す"
-    LeadingZero.STRIP -> "取る"
-    LeadingZero.TO_COUNTRY_CODE -> "81 にする"
-}
 
 /**
  * 指定の番号種別のルールを有効/無効にする。

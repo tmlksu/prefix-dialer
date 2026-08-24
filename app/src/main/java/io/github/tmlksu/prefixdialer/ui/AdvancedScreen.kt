@@ -20,8 +20,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.tmlksu.prefixdialer.PhoneAccounts
+import io.github.tmlksu.prefixdialer.R
 import io.github.tmlksu.prefixdialer.Settings
 import io.github.tmlksu.prefixdialer.SystemStatus
 
@@ -56,20 +58,21 @@ fun AdvancedScreen(
         // --- 通話履歴の書き換え ----------------------------------------------
 
         SectionCard(
-            title = "通話履歴の書き換え",
-            description = "発信後に、通話履歴の番号をプレフィックスなしの元番号へ戻します。" +
-                "電話帳の名前が表示されるようになります。",
+            title = stringResource(R.string.calllog_title),
+            description = stringResource(R.string.calllog_description),
         ) {
             ListItem(
-                headlineContent = { Text("履歴を元の番号に戻す") },
+                headlineContent = { Text(stringResource(R.string.calllog_switch)) },
                 supportingContent = {
                     Text(
-                        when {
-                            !settings.callLogRewriteEnabled -> "無効"
-                            !status.readyForCallLogRewrite -> "権限が不足しています"
-                            !status.ignoringBatteryOptimizations -> "バッテリー最適化の解除を推奨"
-                            else -> "有効"
-                        },
+                        stringResource(
+                            when {
+                                !settings.callLogRewriteEnabled -> R.string.calllog_state_off
+                                !status.readyForCallLogRewrite -> R.string.calllog_state_missing_permission
+                                !status.ignoringBatteryOptimizations -> R.string.calllog_state_battery
+                                else -> R.string.calllog_state_on
+                            },
+                        ),
                     )
                 },
                 trailingContent = {
@@ -89,42 +92,31 @@ fun AdvancedScreen(
 
             if (settings.callLogRewriteEnabled) {
                 if (!status.readyForCallLogRewrite) {
-                    NoteText(
-                        "通話履歴の読み書き権限が必要です。許可するまでこの機能は動作しません。",
-                        isWarning = true,
-                    )
-                    TextButton(onClick = onEnableCallLogRewrite) { Text("権限を許可する") }
+                    NoteText(stringResource(R.string.calllog_note_permission), isWarning = true)
+                    TextButton(onClick = onEnableCallLogRewrite) {
+                        Text(stringResource(R.string.calllog_note_permission_action))
+                    }
                 } else if (!status.ignoringBatteryOptimizations) {
-                    NoteText(
-                        "バッテリー最適化が有効だと、書き換え処理が途中で止められることがあります" +
-                            "（Samsung / One UI では特に起きやすい）。",
-                        isWarning = true,
-                    )
+                    NoteText(stringResource(R.string.calllog_note_battery), isWarning = true)
                     TextButton(onClick = onRequestBatteryExemption) {
-                        Text("バッテリー最適化を解除する")
+                        Text(stringResource(R.string.calllog_note_battery_action))
                     }
                 }
             } else {
-                NoteText(
-                    "この機能を使わない場合、通話履歴の権限は一切要求されません。" +
-                        "履歴にはプレフィックス付きの番号が残ります。",
-                )
+                NoteText(stringResource(R.string.calllog_note_off))
             }
         }
 
         // --- ローミング ------------------------------------------------------
 
         SectionCard(
-            title = "ローミング",
-            description = "海外のネットワークに接続しているときの動作。",
+            title = stringResource(R.string.roaming_title),
+            description = stringResource(R.string.roaming_description),
         ) {
             ListItem(
-                headlineContent = { Text("ローミング中は停止する") },
+                headlineContent = { Text(stringResource(R.string.roaming_switch)) },
                 supportingContent = {
-                    Text(
-                        "国内向けのプレフィックスは海外では機能せず、" +
-                            "意図しない料金が発生する可能性があります。",
-                    )
+                    Text(stringResource(R.string.roaming_switch_description))
                 },
                 trailingContent = {
                     Switch(
@@ -140,29 +132,31 @@ fun AdvancedScreen(
         // --- SIM / 回線ごとの設定 --------------------------------------------
 
         SectionCard(
-            title = "回線ごとの設定",
-            description = "契約していない回線でプレフィックスを使うと、割引が効かず" +
-                "通常より高い料金になることがあります。",
+            title = stringResource(R.string.lines_title),
+            description = stringResource(R.string.lines_description),
         ) {
             when {
                 !hasPhoneStatePermission -> {
-                    NoteText(
-                        "回線の一覧を表示するには電話状態の権限が必要です。" +
-                            "この権限はプレフィックスの動作そのものには不要で、" +
-                            "回線名を表示するためだけに使います。",
-                    )
+                    NoteText(stringResource(R.string.lines_permission_note))
                     TextButton(onClick = onRequestPhoneStatePermission) {
-                        Text("回線を表示する")
+                        Text(stringResource(R.string.lines_permission_action))
                     }
                 }
-                lines.isEmpty() -> NoteText("利用できる回線が見つかりませんでした。")
+                lines.isEmpty() -> NoteText(stringResource(R.string.lines_empty))
                 else -> {
                     for ((index, line) in lines.withIndex()) {
                         if (index > 0) HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         val enabled = line.id !in settings.disabledPhoneAccountIds
                         ListItem(
                             headlineContent = { Text(line.label) },
-                            supportingContent = { Text(if (enabled) "有効" else "この回線では付けない") },
+                            supportingContent = {
+                                Text(
+                                    stringResource(
+                                        if (enabled) R.string.lines_enabled
+                                        else R.string.lines_disabled,
+                                    ),
+                                )
+                            },
                             trailingContent = {
                                 Switch(
                                     checked = enabled,
@@ -187,16 +181,15 @@ fun AdvancedScreen(
         // --- バックアップ ----------------------------------------------------
 
         SectionCard(
-            title = "設定のバックアップ",
-            description = "設定を JSON ファイルとして書き出し、別の端末で読み込めます。" +
-                "回線ごとの設定は端末固有なので含まれません。",
+            title = stringResource(R.string.backup_title),
+            description = stringResource(R.string.backup_description),
         ) {
             Row(
                 Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                OutlinedButton(onClick = onExport) { Text("書き出す") }
-                OutlinedButton(onClick = onImport) { Text("読み込む") }
+                OutlinedButton(onClick = onExport) { Text(stringResource(R.string.backup_export)) }
+                OutlinedButton(onClick = onImport) { Text(stringResource(R.string.backup_import)) }
             }
         }
 

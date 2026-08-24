@@ -8,6 +8,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import io.github.tmlksu.prefixdialer.ui.AdvancedScreen
 import io.github.tmlksu.prefixdialer.ui.ExclusionsScreen
 import io.github.tmlksu.prefixdialer.ui.HomeScreen
@@ -30,12 +32,12 @@ import io.github.tmlksu.prefixdialer.ui.RecordsScreen
 import io.github.tmlksu.prefixdialer.ui.RulesScreen
 
 /** 画面。数が少ないのでナビゲーションライブラリは入れず、状態で切り替える。 */
-private enum class Screen(val title: String) {
-    HOME("Prefix Dialer"),
-    RULES("書き換えルール"),
-    EXCLUSIONS("除外する番号"),
-    RECORDS("発信記録"),
-    ADVANCED("詳細設定"),
+private enum class Screen(@StringRes val titleRes: Int) {
+    HOME(R.string.screen_home),
+    RULES(R.string.screen_rules),
+    EXCLUSIONS(R.string.screen_exclusions),
+    RECORDS(R.string.screen_records),
+    ADVANCED(R.string.screen_advanced),
 }
 
 /**
@@ -80,7 +82,7 @@ class MainActivity : ComponentActivity() {
         if (essential.all { granted[it] == true }) {
             updateSettings { it.copy(callLogRewriteEnabled = true) }
         } else {
-            toast("通話履歴の権限が無いため、履歴の書き換えは有効にできません")
+            toast(R.string.calllog_permission_denied)
         }
     }
 
@@ -97,7 +99,7 @@ class MainActivity : ComponentActivity() {
                 it.write(settingsStore.exportJson().toByteArray())
             } ?: error("could not open $uri")
         }.isSuccess
-        toast(if (ok) "設定を書き出しました" else "書き出しに失敗しました")
+        toast(if (ok) R.string.backup_exported else R.string.backup_export_failed)
     }
 
     private val importLauncher = registerForActivityResult(
@@ -109,14 +111,14 @@ class MainActivity : ComponentActivity() {
         }.getOrNull()
 
         if (text == null) {
-            toast("ファイルを読めませんでした")
+            toast(R.string.backup_read_failed)
             return@registerForActivityResult
         }
         if (settingsStore.importJson(text)) {
             settings = settingsStore.load()
-            toast("設定を読み込みました")
+            toast(R.string.backup_imported)
         } else {
-            toast("設定の形式が正しくありません")
+            toast(R.string.backup_invalid)
         }
     }
 
@@ -137,13 +139,13 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text(screen.title) },
+                            title = { Text(stringResource(screen.titleRes)) },
                             navigationIcon = {
                                 if (screen != Screen.HOME) {
                                     IconButton(onClick = { screen = Screen.HOME }) {
                                         Icon(
                                             Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "戻る",
+                                            contentDescription = stringResource(R.string.action_back),
                                         )
                                     }
                                 }
@@ -251,7 +253,7 @@ class MainActivity : ComponentActivity() {
         settings = settingsStore.update(transform)
     }
 
-    private fun toast(message: String) {
+    private fun toast(@StringRes message: Int) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
@@ -262,8 +264,9 @@ class MainActivity : ComponentActivity() {
      * 誤解する。名前と中身を一致させる。
      */
     private fun RuleSet.renamedIfEdited(): RuleSet {
+        val customName = Presets.CUSTOM_ID
         val matchesPreset = Presets.all.any { it.name == name && it.rules == rules }
-        return if (matchesPreset || name == Presets.custom.name) this else copy(name = "カスタム")
+        return if (matchesPreset || name == customName) this else copy(name = customName)
     }
 
     companion object {

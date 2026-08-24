@@ -1,3 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Default (English) strings.
+
+  The app only rewrites Japanese phone numbers, so most users will see values-ja.
+  English is kept as the default so that any other locale falls back to something
+  readable rather than to Japanese.
+-->
 <resources>
     <string name="app_name">Prefix Dialer</string>
+
+    <!-- Screen titles -->
+    <string name="screen_home">Prefix Dialer</string>
+    <string name="screen_rules">Rewrite rules</string>
+    <string name="screen_exclusions">Excluded numbers</string>
+    <string name="screen_records">Call records</string>
+    <string name="screen_advanced">Advanced</string>
+    <string name="action_back">Back</string>
+
+    <!-- Home: warnings -->
+    <string name="warn_unsupported_title">Not available on this device</string>
+    <string name="warn_unsupported_body">This device does not support call redirection. It requires Android 10 or later, and the manufacturer must not have disabled the feature.</string>
+    <string name="warn_no_role_title">Call redirection is off</string>
+    <string name="warn_no_role_body">No prefix will be added. Another calling app may have taken this role — only one app on the device can hold it.</string>
+    <string name="warn_no_role_action">Turn on</string>
+    <string name="info_disabled_title">Paused</string>
+    <string name="info_disabled_body">The master switch is off. All calls are placed unchanged.</string>
+    <string name="warn_no_rules_title">No rules configured</string>
+    <string name="warn_no_rules_body">No enabled rule exists, so no prefix will be added.</string>
+    <string name="warn_no_rules_action">Configure</string>
+
+    <!-- Home: master switch and summary -->
+    <string name="master_switch_title">Add prefix</string>
+    <string name="master_switch_on">On</string>
+    <string name="master_switch_off">Paused</string>
+    <string name="current_settings">Current settings</string>
+    <string name="summary_paused">Paused</string>
+    <string name="summary_unchanged">Placed unchanged</string>
+
+    <!-- Home: navigation -->
+    <string name="nav_rules_subtitle">Prefix and per-number-type settings</string>
+    <string name="nav_exclusions_none">None</string>
+    <string name="nav_exclusions_count">%1$d entries</string>
+    <string name="nav_records_subtitle">What was done on each call</string>
+    <string name="nav_advanced_subtitle">Call log, SIM, roaming, backup</string>
+
+    <!-- Number categories -->
+    <string name="category_mobile">Mobile</string>
+    <string name="category_fixed_line">Landline</string>
+    <string name="category_voip">VoIP (050)</string>
+
+    <!-- Rules screen -->
+    <string name="presets_title">Presets</string>
+    <string name="presets_description">Selecting a preset replaces the settings below. Only carriers whose behaviour has been verified are included.</string>
+    <string name="rule_on">Add a prefix</string>
+    <string name="rule_off">Place unchanged</string>
+    <string name="rule_prefix_label">Prefix</string>
+    <string name="rule_prefix_empty">No prefix is added until you enter one</string>
+    <string name="rule_leading_zero_label">Leading zero of the original number</string>
+    <string name="leading_zero_keep">Keep</string>
+    <string name="leading_zero_strip">Remove</string>
+    <string name="leading_zero_country_code">Use 81</string>
+    <string name="never_rewritten_title">Never rewritten, whatever the settings</string>
+    <string name="never_rewritten_description">The following are always placed unchanged.</string>
+    <string name="never_rewritten_list">• Emergency and three-digit service numbers (110 / 119 / 118 / 117 / 171 …)\n• Numbers containing # or * (#7119 / #8000 / #9110 …)\n• Toll-free 0120 / 0800, shared-cost 0570, premium-rate 0990\n• International access 010 and other carriers\' 00XY prefixes\n• Numbers outside Japan\n• Numbers starting with the caller-ID prefixes 184 / 186</string>
+
+    <!-- Exclusions screen -->
+    <string name="exclusions_description">Numbers listed here never get a prefix, regardless of the rules. Hyphens and brackets are ignored when matching.</string>
+    <string name="exclusions_add_label">Add a number</string>
+    <string name="exclusions_add_placeholder">03-1234-5678</string>
+    <string name="exclusions_already_present">Already in the list</string>
+    <string name="exclusions_normalized_as">Will be stored as: %1$s</string>
+    <string name="exclusions_add_action">Add</string>
+    <string name="exclusions_empty">No numbers are excluded.</string>
+    <string name="exclusions_delete">Remove %1$s</string>
+
+    <!-- Records screen -->
+    <string name="records_description">A log of what this app did on each call. Stored only on this device and never sent anywhere. This is not your call history.</string>
+    <string name="records_empty">No records yet. Place a call and the result will appear here.</string>
+    <string name="records_clear">Clear records</string>
+    <string name="records_rewritten">Prefix added</string>
+    <string name="records_not_rewritten">No prefix</string>
+    <string name="records_arrow">→ %1$s</string>
+
+    <!-- Advanced: call log rewrite -->
+    <string name="calllog_title">Call log rewriting</string>
+    <string name="calllog_description">After a call is placed, restore the number in the call log to the original one without the prefix, so contact names are shown.</string>
+    <string name="calllog_switch">Restore original numbers in the call log</string>
+    <string name="calllog_state_off">Off</string>
+    <string name="calllog_state_missing_permission">Permissions missing</string>
+    <string name="calllog_state_battery">Battery optimisation should be disabled</string>
+    <string name="calllog_state_on">On</string>
+    <string name="calllog_note_permission">Call log read and write permissions are required. This feature does nothing until they are granted.</string>
+    <string name="calllog_note_permission_action">Grant permissions</string>
+    <string name="calllog_note_battery">With battery optimisation enabled the rewrite can be stopped part-way, which is especially common on Samsung / One UI.</string>
+    <string name="calllog_note_battery_action">Disable battery optimisation</string>
+    <string name="calllog_note_off">If you leave this off, no call log permission is ever requested. The prefix will remain visible in your call history.</string>
+    <string name="calllog_permission_denied">Call log rewriting cannot be enabled without call log permissions</string>
+
+    <!-- Advanced: roaming -->
+    <string name="roaming_title">Roaming</string>
+    <string name="roaming_description">Behaviour while connected to a network abroad.</string>
+    <string name="roaming_switch">Pause while roaming</string>
+    <string name="roaming_switch_description">Domestic carrier prefixes do not work abroad and may lead to unexpected charges.</string>
+
+    <!-- Advanced: SIM lines -->
+    <string name="lines_title">Per-line settings</string>
+    <string name="lines_description">Using a prefix on a line you have not subscribed to can cost more than the normal rate.</string>
+    <string name="lines_permission_note">Listing your lines requires the phone state permission. It is not needed for the prefix itself — only to show line names here.</string>
+    <string name="lines_permission_action">Show lines</string>
+    <string name="lines_empty">No lines were found.</string>
+    <string name="lines_enabled">On</string>
+    <string name="lines_disabled">No prefix on this line</string>
+
+    <!-- Advanced: backup -->
+    <string name="backup_title">Settings backup</string>
+    <string name="backup_description">Export your settings as a JSON file and import them on another device. Per-line settings are device specific and are not included.</string>
+    <string name="backup_export">Export</string>
+    <string name="backup_import">Import</string>
+    <string name="backup_exported">Settings exported</string>
+    <string name="backup_export_failed">Export failed</string>
+    <string name="backup_read_failed">Could not read the file</string>
+    <string name="backup_imported">Settings imported</string>
+    <string name="backup_invalid">The settings file is not valid</string>
+
+    <!-- Skip reasons -->
+    <string name="skip_protected_number">Emergency or service number (always protected)</string>
+    <string name="skip_master_off">The feature is paused</string>
+    <string name="skip_roaming">Roaming</string>
+    <string name="skip_disabled_line">This line is set not to use a prefix</string>
+    <string name="skip_excluded">The number is in the exclusion list</string>
+    <string name="skip_already_prefixed">A prefix was already present</string>
+    <string name="skip_carrier_prefix">Another carrier\'s access code was already present</string>
+    <string name="skip_international">International call</string>
+    <string name="skip_unparseable">Could not be read as a phone number</string>
+    <string name="skip_not_japan">Not a Japanese number</string>
+    <string name="skip_invalid">Not a valid phone number</string>
+    <string name="skip_not_target_type">Toll-free or similar type that cannot take a prefix</string>
+    <string name="skip_ambiguous_type">Mobile and landline settings differ and the type is unclear</string>
+    <string name="skip_no_rule">No enabled rule for this number type</string>
+    <string name="skip_pass_through">Matched a rule set to add no prefix</string>
+    <string name="skip_empty">The number was empty</string>
+
+    <!-- Preset names -->
+    <string name="preset_custom">Custom</string>
 </resources>

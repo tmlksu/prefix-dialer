@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Prefix Dialer</string>
+
+    <!-- 画面タイトル -->
+    <string name="screen_home">Prefix Dialer</string>
+    <string name="screen_rules">書き換えルール</string>
+    <string name="screen_exclusions">除外する番号</string>
+    <string name="screen_records">発信記録</string>
+    <string name="screen_advanced">詳細設定</string>
+    <string name="action_back">戻る</string>
+
+    <!-- ホーム: 警告 -->
+    <string name="warn_unsupported_title">この端末では利用できません</string>
+    <string name="warn_unsupported_body">通話リダイレクト機能に対応していない端末です。Android 10 以降かつ、メーカーがこの機能を無効化していない必要があります。</string>
+    <string name="warn_no_role_title">通話リダイレクトが無効です</string>
+    <string name="warn_no_role_body">プレフィックスは付きません。他の通話系アプリにこの役割を取られた可能性があります（端末に 1 アプリしか設定できません）。</string>
+    <string name="warn_no_role_action">有効にする</string>
+    <string name="info_disabled_title">停止中</string>
+    <string name="info_disabled_body">マスタースイッチが OFF です。すべての発信がそのまま行われます。</string>
+    <string name="warn_no_rules_title">ルールが設定されていません</string>
+    <string name="warn_no_rules_body">有効なルールが 1 件もないため、プレフィックスは付きません。</string>
+    <string name="warn_no_rules_action">設定する</string>
+
+    <!-- ホーム: マスタースイッチと要約 -->
+    <string name="master_switch_title">プレフィックスを付ける</string>
+    <string name="master_switch_on">有効</string>
+    <string name="master_switch_off">停止中</string>
+    <string name="current_settings">現在の設定</string>
+    <string name="summary_paused">停止中</string>
+    <string name="summary_unchanged">そのまま発信</string>
+
+    <!-- ホーム: 各設定へ -->
+    <string name="nav_rules_subtitle">プレフィックスと番号種別ごとの設定</string>
+    <string name="nav_exclusions_none">なし</string>
+    <string name="nav_exclusions_count">%1$d 件</string>
+    <string name="nav_records_subtitle">各発信で何をしたかの記録</string>
+    <string name="nav_advanced_subtitle">通話履歴・SIM・ローミング・バックアップ</string>
+
+    <!-- 番号種別 -->
+    <string name="category_mobile">携帯電話</string>
+    <string name="category_fixed_line">固定電話</string>
+    <string name="category_voip">IP電話 (050)</string>
+
+    <!-- ルール画面 -->
+    <string name="presets_title">プリセット</string>
+    <string name="presets_description">選ぶと以下の設定がまとめて置き換わります。収録しているのは動作を確認できた事業者のみです。</string>
+    <string name="rule_on">プレフィックスを付ける</string>
+    <string name="rule_off">そのまま発信</string>
+    <string name="rule_prefix_label">プレフィックス</string>
+    <string name="rule_prefix_empty">入力するまでプレフィックスは付きません</string>
+    <string name="rule_leading_zero_label">元番号の先頭 0 の扱い</string>
+    <string name="leading_zero_keep">残す</string>
+    <string name="leading_zero_strip">取る</string>
+    <string name="leading_zero_country_code">81 にする</string>
+    <string name="never_rewritten_title">設定に関わらず書き換えない番号</string>
+    <string name="never_rewritten_description">以下はどの設定でもそのまま発信されます。</string>
+    <string name="never_rewritten_list">・緊急通報と 3 桁の特番（110 / 119 / 118 / 117 / 171 など）\n・# や * を含む番号（#7119 / #8000 / #9110 など）\n・フリーダイヤル 0120 / 0800、ナビダイヤル 0570、有料情報 0990\n・国際発信 010、他社の事業者識別番号 00XY\n・海外の番号\n・発信者番号の通知/非通知プレフィックス 184 / 186 で始まる番号</string>
+
+    <!-- 除外番号の画面 -->
+    <string name="exclusions_description">ここに登録した番号には、ルールの設定に関わらずプレフィックスが付きません。ハイフンや括弧は無視して照合します。</string>
+    <string name="exclusions_add_label">番号を追加</string>
+    <string name="exclusions_add_placeholder">03-1234-5678</string>
+    <string name="exclusions_already_present">すでに登録されています</string>
+    <string name="exclusions_normalized_as">登録される形式: %1$s</string>
+    <string name="exclusions_add_action">追加</string>
+    <string name="exclusions_empty">除外している番号はありません。</string>
+    <string name="exclusions_delete">%1$s を削除</string>
+
+    <!-- 発信記録の画面 -->
+    <string name="records_description">このアプリが各発信で何をしたかの記録です。端末内にのみ保存され、外部には送信されません。通話履歴そのものではありません。</string>
+    <string name="records_empty">まだ記録がありません。発信すると、ここに結果が残ります。</string>
+    <string name="records_clear">記録を消去</string>
+    <string name="records_rewritten">プレフィックスあり</string>
+    <string name="records_not_rewritten">プレフィックスなし</string>
+    <string name="records_arrow">→ %1$s</string>
+
+    <!-- 詳細設定: 通話履歴の書き換え -->
+    <string name="calllog_title">通話履歴の書き換え</string>
+    <string name="calllog_description">発信後に、通話履歴の番号をプレフィックスなしの元番号へ戻します。電話帳の名前が表示されるようになります。</string>
+    <string name="calllog_switch">履歴を元の番号に戻す</string>
+    <string name="calllog_state_off">無効</string>
+    <string name="calllog_state_missing_permission">権限が不足しています</string>
+    <string name="calllog_state_battery">バッテリー最適化の解除を推奨</string>
+    <string name="calllog_state_on">有効</string>
+    <string name="calllog_note_permission">通話履歴の読み書き権限が必要です。許可するまでこの機能は動作しません。</string>
+    <string name="calllog_note_permission_action">権限を許可する</string>
+    <string name="calllog_note_battery">バッテリー最適化が有効だと、書き換え処理が途中で止められることがあります（Samsung / One UI では特に起きやすい）。</string>
+    <string name="calllog_note_battery_action">バッテリー最適化を解除する</string>
+    <string name="calllog_note_off">この機能を使わない場合、通話履歴の権限は一切要求されません。履歴にはプレフィックス付きの番号が残ります。</string>
+    <string name="calllog_permission_denied">通話履歴の権限が無いため、履歴の書き換えは有効にできません</string>
+
+    <!-- 詳細設定: ローミング -->
+    <string name="roaming_title">ローミング</string>
+    <string name="roaming_description">海外のネットワークに接続しているときの動作。</string>
+    <string name="roaming_switch">ローミング中は停止する</string>
+    <string name="roaming_switch_description">国内向けのプレフィックスは海外では機能せず、意図しない料金が発生する可能性があります。</string>
+
+    <!-- 詳細設定: 回線ごとの設定 -->
+    <string name="lines_title">回線ごとの設定</string>
+    <string name="lines_description">契約していない回線でプレフィックスを使うと、割引が効かず通常より高い料金になることがあります。</string>
+    <string name="lines_permission_note">回線の一覧を表示するには電話状態の権限が必要です。この権限はプレフィックスの動作そのものには不要で、回線名を表示するためだけに使います。</string>
+    <string name="lines_permission_action">回線を表示する</string>
+    <string name="lines_empty">利用できる回線が見つかりませんでした。</string>
+    <string name="lines_enabled">有効</string>
+    <string name="lines_disabled">この回線では付けない</string>
+
+    <!-- 詳細設定: バックアップ -->
+    <string name="backup_title">設定のバックアップ</string>
+    <string name="backup_description">設定を JSON ファイルとして書き出し、別の端末で読み込めます。回線ごとの設定は端末固有なので含まれません。</string>
+    <string name="backup_export">書き出す</string>
+    <string name="backup_import">読み込む</string>
+    <string name="backup_exported">設定を書き出しました</string>
+    <string name="backup_export_failed">書き出しに失敗しました</string>
+    <string name="backup_read_failed">ファイルを読めませんでした</string>
+    <string name="backup_imported">設定を読み込みました</string>
+    <string name="backup_invalid">設定の形式が正しくありません</string>
+
+    <!-- 書き換えなかった理由 -->
+    <string name="skip_protected_number">緊急通報・特番のため（設定に関わらず保護されます）</string>
+    <string name="skip_master_off">機能が停止中のため</string>
+    <string name="skip_roaming">ローミング中のため</string>
+    <string name="skip_disabled_line">この回線では付けない設定のため</string>
+    <string name="skip_excluded">除外リストに登録されているため</string>
+    <string name="skip_already_prefixed">すでにプレフィックスが付いているため</string>
+    <string name="skip_carrier_prefix">他社の事業者識別番号が付いているため</string>
+    <string name="skip_international">国際発信のため</string>
+    <string name="skip_unparseable">番号として解釈できなかったため</string>
+    <string name="skip_not_japan">日本の番号ではないため</string>
+    <string name="skip_invalid">有効な電話番号ではないため</string>
+    <string name="skip_not_target_type">フリーダイヤル等、対象にできない種別のため</string>
+    <string name="skip_ambiguous_type">携帯か固定か判別できず、種別で設定が異なるため</string>
+    <string name="skip_no_rule">この種別に有効なルールが無いため</string>
+    <string name="skip_pass_through">「付けない」ルールに一致したため</string>
+    <string name="skip_empty">番号が空のため</string>
+
+    <!-- プリセット名 -->
+    <string name="preset_custom">カスタム</string>
+</resources>

@@ -29,9 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import io.github.tmlksu.prefixdialer.R
 import io.github.tmlksu.prefixdialer.Settings
 
 /**
@@ -66,8 +68,7 @@ fun ExclusionsScreen(
             ),
         ) {
             Text(
-                "ここに登録した番号には、ルールの設定に関わらずプレフィックスが付きません。" +
-                    "ハイフンや括弧は無視して照合します。",
+                stringResource(R.string.exclusions_description),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(16.dp),
             )
@@ -78,17 +79,17 @@ fun ExclusionsScreen(
                 OutlinedTextField(
                     value = input,
                     onValueChange = { input = it },
-                    label = { Text("番号を追加") },
-                    placeholder = { Text("03-1234-5678") },
+                    label = { Text(stringResource(R.string.exclusions_add_label)) },
+                    placeholder = { Text(stringResource(R.string.exclusions_add_placeholder)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     isError = alreadyPresent,
                     supportingText = when {
                         alreadyPresent -> {
-                            { Text("すでに登録されています") }
+                            { Text(stringResource(R.string.exclusions_already_present)) }
                         }
                         normalized.isNotEmpty() -> {
-                            { Text("登録される形式: $normalized") }
+                            { Text(stringResource(R.string.exclusions_normalized_as, normalized)) }
                         }
                         else -> null
                     },
@@ -102,14 +103,14 @@ fun ExclusionsScreen(
                     enabled = normalized.isNotEmpty() && !alreadyPresent,
                     modifier = Modifier.align(Alignment.End),
                 ) {
-                    Text("追加")
+                    Text(stringResource(R.string.exclusions_add_action))
                 }
             }
         }
 
         if (excludedNumbers.isEmpty()) {
             Text(
-                "除外している番号はありません。",
+                stringResource(R.string.exclusions_empty),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(16.dp),
             )
@@ -124,7 +125,7 @@ fun ExclusionsScreen(
                             },
                             trailingContent = {
                                 IconButton(onClick = { onChange(excludedNumbers - number) }) {
-                                    Icon(Icons.Filled.Delete, contentDescription = "$number を削除")
+                                    Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.exclusions_delete, number))
                                 }
                             },
                         )

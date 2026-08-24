@@ -27,9 +27,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.tmlksu.prefixdialer.NumberCategory
+import io.github.tmlksu.prefixdialer.R
 import io.github.tmlksu.prefixdialer.RuleAction
 import io.github.tmlksu.prefixdialer.RuleCondition
 import io.github.tmlksu.prefixdialer.Settings
@@ -66,29 +68,27 @@ fun HomeScreen(
 
         if (!status.roleAvailable) {
             WarningCard(
-                title = "この端末では利用できません",
-                body = "通話リダイレクト機能に対応していない端末です。" +
-                    "Android 10 以降かつ、メーカーがこの機能を無効化していない必要があります。",
+                title = stringResource(R.string.warn_unsupported_title),
+                body = stringResource(R.string.warn_unsupported_body),
             )
         } else if (!status.hasRedirectionRole) {
             WarningCard(
-                title = "通話リダイレクトが無効です",
-                body = "プレフィックスは付きません。他の通話系アプリにこの役割を" +
-                    "取られた可能性があります（端末に 1 アプリしか設定できません）。",
-                actionLabel = "有効にする",
+                title = stringResource(R.string.warn_no_role_title),
+                body = stringResource(R.string.warn_no_role_body),
+                actionLabel = stringResource(R.string.warn_no_role_action),
                 onAction = onRequestRole,
             )
         } else if (!settings.ruleSet.enabled) {
             InfoCard(
                 icon = Icons.Filled.Block,
-                title = "停止中",
-                body = "マスタースイッチが OFF です。すべての発信がそのまま行われます。",
+                title = stringResource(R.string.info_disabled_title),
+                body = stringResource(R.string.info_disabled_body),
             )
         } else if (settings.ruleSet.rules.none { it.enabled && it.action is RuleAction.Apply }) {
             WarningCard(
-                title = "ルールが設定されていません",
-                body = "有効なルールが 1 件もないため、プレフィックスは付きません。",
-                actionLabel = "設定する",
+                title = stringResource(R.string.warn_no_rules_title),
+                body = stringResource(R.string.warn_no_rules_body),
+                actionLabel = stringResource(R.string.warn_no_rules_action),
                 onAction = onOpenRules,
             )
         }
@@ -97,9 +97,14 @@ fun HomeScreen(
 
         Card(Modifier.fillMaxWidth()) {
             ListItem(
-                headlineContent = { Text("プレフィックスを付ける") },
+                headlineContent = { Text(stringResource(R.string.master_switch_title)) },
                 supportingContent = {
-                    Text(if (settings.ruleSet.enabled) "有効" else "停止中")
+                    Text(
+                        stringResource(
+                            if (settings.ruleSet.enabled) R.string.master_switch_on
+                            else R.string.master_switch_off,
+                        ),
+                    )
                 },
                 trailingContent = {
                     Switch(
@@ -117,8 +122,8 @@ fun HomeScreen(
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(vertical = 8.dp)) {
                 ListItem(
-                    overlineContent = { Text("現在の設定") },
-                    headlineContent = { Text(settings.ruleSet.name) },
+                    overlineContent = { Text(stringResource(R.string.current_settings)) },
+                    headlineContent = { Text(settings.ruleSet.displayName()) },
                 )
                 HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                 for (category in NumberCategory.entries) {
@@ -132,30 +137,30 @@ fun HomeScreen(
         Card(Modifier.fillMaxWidth()) {
             Column {
                 NavigationRow(
-                    title = "書き換えルール",
-                    subtitle = "プレフィックスと番号種別ごとの設定",
+                    title = stringResource(R.string.screen_rules),
+                    subtitle = stringResource(R.string.nav_rules_subtitle),
                     onClick = onOpenRules,
                 )
                 HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                 NavigationRow(
-                    title = "除外する番号",
+                    title = stringResource(R.string.screen_exclusions),
                     subtitle = if (settings.excludedNumbers.isEmpty()) {
-                        "なし"
+                        stringResource(R.string.nav_exclusions_none)
                     } else {
-                        "${settings.excludedNumbers.size} 件"
+                        stringResource(R.string.nav_exclusions_count, settings.excludedNumbers.size)
                     },
                     onClick = onOpenExclusions,
                 )
                 HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                 NavigationRow(
-                    title = "発信記録",
-                    subtitle = "各発信で何をしたかの記録",
+                    title = stringResource(R.string.screen_records),
+                    subtitle = stringResource(R.string.nav_records_subtitle),
                     onClick = onOpenRecords,
                 )
                 HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                 NavigationRow(
-                    title = "詳細設定",
-                    subtitle = "通話履歴・SIM・ローミング・バックアップ",
+                    title = stringResource(R.string.screen_advanced),
+                    subtitle = stringResource(R.string.nav_advanced_subtitle),
                     onClick = onOpenAdvanced,
                 )
             }
@@ -175,14 +180,14 @@ private fun RuleSummaryRow(settings: Settings, category: NumberCategory) {
         }?.action
 
     val description = when {
-        !settings.ruleSet.enabled -> "停止中"
+        !settings.ruleSet.enabled -> stringResource(R.string.summary_paused)
         action is RuleAction.Apply ->
             action.prefix + action.leadingZero.apply(sample) + action.suffix
-        else -> "そのまま発信"
+        else -> stringResource(R.string.summary_unchanged)
     }
 
     ListItem(
-        headlineContent = { Text(category.label()) },
+        headlineContent = { Text(stringResource(category.labelRes)) },
         supportingContent = {
             Text(
                 text = "$sample → $description",
@@ -266,15 +271,4 @@ private fun InfoCard(
     }
 }
 
-internal fun NumberCategory.label(): String = when (this) {
-    NumberCategory.MOBILE -> "携帯電話"
-    NumberCategory.FIXED_LINE -> "固定電話"
-    NumberCategory.VOIP -> "IP電話 (050)"
-}
 
-/** ルールの効き方を具体的に見せるためのサンプル番号（実在しない番号帯を使う）。 */
-internal fun NumberCategory.sampleNumber(): String = when (this) {
-    NumberCategory.MOBILE -> "09012345678"
-    NumberCategory.FIXED_LINE -> "0312345678"
-    NumberCategory.VOIP -> "05012345678"
-}
