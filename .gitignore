@@ -8,3 +8,8 @@
 /captures
 .externalNativeBuild
 .cxx
+
+# リリース署名。鍵とパスワードは絶対にコミットしない
+/keystore.properties
+*.keystore
+*.jks

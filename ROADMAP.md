@@ -10,7 +10,7 @@
 - ✅ **緊急通報・特番のハードガード**（`ProtectedNumbers`）— ユーザー設定より上位の安全層
 - ✅ ユニットテスト 32 件（うち緊急通報の不変条件テスト 13 件）
 - ✅ Samsung Galaxy S25 / One UI 7 / Android 15 実機で発信〜履歴書き換えまで動作確認
-- MVP の applicationId は `com.example.prefixdialer` のまま（公開前に要変更）
+- MVP の applicationId は `io.github.tmlksu.prefixdialer` のまま（公開前に要変更）
 
 ## 1.0 スコープ（確定）
 

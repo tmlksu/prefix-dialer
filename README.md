@@ -11,7 +11,7 @@
 - **MVP 動作中** — S25 実機で発信〜履歴書き換えまで確認済み（2026-08-24）
 - 公開アプリ化を見据えて開発中。残タスクは [ROADMAP.md](ROADMAP.md) 参照
   （applicationId のリネーム、署名設定、Call Log 権限の Play ポリシー対応、プライバシーポリシー等）
-- 現状の `applicationId` は `com.example.prefixdialer`（公開前に要変更）
+- 現状の `applicationId` は `io.github.tmlksu.prefixdialer`（公開前に要変更）
 
 ## プレフィックスの判定ロジック
 
@@ -135,7 +135,7 @@ SDK の場所は `local.properties`（`sdk.dir=...`、リポジトリには含�
 ## ファイル構成
 
 ```
-app/src/main/java/com/example/prefixdialer/
+app/src/main/java/io.github.tmlksu.prefixdialer/
   PhoneNumberPrefixer.kt      判定の入り口（有効なルールセットを解決して委譲）
   DialRule.kt                 ルールのデータモデル（種別×prefix×先頭0の扱い）
   RuleEngine.kt               ルール評価器（Android非依存・テスト対象）
@@ -145,6 +145,6 @@ app/src/main/java/com/example/prefixdialer/
   CallLogRewriteService.kt    発信後に履歴を元番号へ戻す（短命FGS）
   PendingRewrites.kt          発信番号→元番号 の一時対応表
   MainActivity.kt             ロール/権限/バッテリーのセットアップ画面
-app/src/test/java/com/example/prefixdialer/
+app/src/test/java/io.github.tmlksu.prefixdialer/
   PhoneNumberPrefixerTest.kt  buildDialNumber の網羅テスト
 ```

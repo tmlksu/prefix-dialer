@@ -1,19 +1,46 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
+/**
+ * リリース署名の設定は keystore.properties から読む。このファイルと keystore 本体は
+ * リポジトリに含めない（.gitignore 済み）。
+ *
+ * 用意されていない場合は署名設定を作らず、release ビルドは未署名になる。
+ * これは意図した挙動で、鍵が無い環境でも `assembleDebug` と `test` は通る。
+ * 手順は DECISIONS.md の D-01 を参照。
+ */
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+val hasSigningConfig = keystoreProperties.getProperty("storeFile") != null
+
 android {
-    namespace = "com.example.prefixdialer"
+    namespace = "io.github.tmlksu.prefixdialer"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.prefixdialer"
+        applicationId = "io.github.tmlksu.prefixdialer"
         minSdk = 29          // Android 10: CallRedirectionService が使える最低ライン
         targetSdk = 35       // Android 15 (S25 / One UI 7)
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        if (hasSigningConfig) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
     }
 
     buildFeatures {
@@ -27,12 +54,26 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            if (hasSigningConfig) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+    }
+
+    /**
+     * release 変種のユニットテストは動かさない。
+     *
+     * テスト対象は Android 非依存の純粋ロジックだけなので debug 変種で十分であり、
+     * minify 後のクラスに対してテストをコンパイルしようとして失敗するのを避ける。
+     */
+    androidComponents {
+        beforeVariants(selector().withBuildType("release")) { it.enableUnitTest = false }
     }
 
     compileOptions {
