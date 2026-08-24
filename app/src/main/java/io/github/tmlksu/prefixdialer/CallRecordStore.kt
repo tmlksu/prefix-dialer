@@ -11,6 +11,10 @@ import android.content.SharedPreferences
  *
  * 発信経路から呼ばれるので、[record] は速く返る必要がある。書き込みは `apply` で
  * 非同期に行い、メモリ上の一覧は即座に更新する。
+ *
+ * 記録するのは発信サービス、表示するのは設定画面で、それぞれ別のインスタンスを持つ。
+ * キャッシュを持ったままだと新しい記録が画面に出てこないため、[SettingsStore] と
+ * 同様に [SharedPreferences] の変更通知でキャッシュを捨てる。
  */
 class CallRecordStore(context: Context) {
 
@@ -19,6 +23,16 @@ class CallRecordStore(context: Context) {
 
     @Volatile
     private var cached: List<CallRecord>? = null
+
+    /** リスナーは弱参照で保持されるため、強参照をフィールドに残しておく。 */
+    private val changeListener =
+        SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == null || key == KEY_RECORDS) cached = null
+        }
+
+    init {
+        prefs.registerOnSharedPreferenceChangeListener(changeListener)
+    }
 
     /** 新しい順の一覧。 */
     fun list(): List<CallRecord> {

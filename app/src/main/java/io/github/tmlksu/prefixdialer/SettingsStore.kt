@@ -20,8 +20,14 @@ import android.util.Log
  * ## 発信経路からの参照について
  *
  * [PrefixRedirectionService.onPlaceCall] は発信のたびに呼ばれ、応答が遅れると
- * 発信そのものが遅れる。そのため読み出し結果をメモリに保持し、毎回の I/O を避ける。
- * 別プロセスからの変更は想定しない（設定 UI と発信サービスは同一プロセス）。
+ * 発信そのものが遅れる。そのため読み出し結果をメモリに保持し、毎回の JSON 解析を避ける。
+ *
+ * ただしインスタンスは共有されない。設定画面と発信サービスはそれぞれ別の
+ * [SettingsStore] を持つため、片方が保存しても、もう片方のキャッシュは古いままになる。
+ * 実際に「設定を変えたのに次の発信に反映されない」という形で表面化する。
+ * そこで [SharedPreferences] の変更通知でキャッシュを捨てる。同一プロセス内では
+ * 同じ名前の [SharedPreferences] インスタンスが共有されるので、どのインスタンス
+ * 経由の変更でも通知が届く。
  */
 class SettingsStore(context: Context) {
 
@@ -30,6 +36,21 @@ class SettingsStore(context: Context) {
 
     @Volatile
     private var cached: Settings? = null
+
+    /**
+     * 他のインスタンスからの保存を検知してキャッシュを捨てる。
+     *
+     * `registerOnSharedPreferenceChangeListener` はリスナーを弱参照で持つため、
+     * フィールドとして強参照を保持しないと GC されて通知が来なくなる。
+     */
+    private val changeListener =
+        SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == null || key == KEY_SETTINGS) cached = null
+        }
+
+    init {
+        prefs.registerOnSharedPreferenceChangeListener(changeListener)
+    }
 
     /** 現在の設定。初回のみ読み出し、以降はメモリ上の値を返す。 */
     fun load(): Settings {
