@@ -1,0 +1,57 @@
+name: build
+
+on:
+  push:
+    branches: [main, v1]
+  pull_request:
+  workflow_dispatch:
+
+# 同じブランチへの連続 push では最新のものだけを走らせる
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # 判定ロジックのテスト。実発信は一切行わない純 JVM のテストで、
+      # 緊急通報の保護に関する不変条件もここで守られる。
+      # ProtectedNumbersTest が赤くなったら期待値ではなく実装を直すこと。
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Lint
+        run: ./gradlew lintDebug
+
+      - name: Assemble debug APK
+        run: ./gradlew assembleDebug
+
+      # release ビルドは R8 を通す。難読化で libphonenumber が壊れていないかを
+      # ビルド段階で検出する（実機での動作確認は別途必要）。
+      - name: Assemble release APK (unsigned)
+        run: ./gradlew assembleRelease
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: app/build/reports/tests/
+          retention-days: 14
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14
