@@ -50,6 +50,7 @@ fun HomeScreen(
     onRequestRole: () -> Unit,
     onOpenRules: () -> Unit,
     onOpenExclusions: () -> Unit,
+    onOpenRecords: () -> Unit,
     onOpenAdvanced: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -144,6 +145,12 @@ fun HomeScreen(
                         "${settings.excludedNumbers.size} 件"
                     },
                     onClick = onOpenExclusions,
+                )
+                HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                NavigationRow(
+                    title = "発信記録",
+                    subtitle = "各発信で何をしたかの記録",
+                    onClick = onOpenRecords,
                 )
                 HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                 NavigationRow(

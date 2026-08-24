@@ -26,6 +26,7 @@ import com.example.prefixdialer.ui.AdvancedScreen
 import com.example.prefixdialer.ui.ExclusionsScreen
 import com.example.prefixdialer.ui.HomeScreen
 import com.example.prefixdialer.ui.PrefixDialerTheme
+import com.example.prefixdialer.ui.RecordsScreen
 import com.example.prefixdialer.ui.RulesScreen
 
 /** 画面。数が少ないのでナビゲーションライブラリは入れず、状態で切り替える。 */
@@ -33,6 +34,7 @@ private enum class Screen(val title: String) {
     HOME("Prefix Dialer"),
     RULES("書き換えルール"),
     EXCLUSIONS("除外する番号"),
+    RECORDS("発信記録"),
     ADVANCED("詳細設定"),
 }
 
@@ -46,6 +48,9 @@ private enum class Screen(val title: String) {
 class MainActivity : ComponentActivity() {
 
     private val settingsStore: SettingsStore by lazy { SettingsStore(this) }
+    private val callRecordStore: CallRecordStore by lazy { CallRecordStore(this) }
+
+    private var records by mutableStateOf(emptyList<CallRecord>())
 
     private var settings by mutableStateOf(Settings())
     private var status by mutableStateOf(SystemStatus())
@@ -159,6 +164,7 @@ class MainActivity : ComponentActivity() {
                             onRequestRole = ::requestRedirectionRole,
                             onOpenRules = { screen = Screen.RULES },
                             onOpenExclusions = { screen = Screen.EXCLUSIONS },
+                            onOpenRecords = { screen = Screen.RECORDS },
                             onOpenAdvanced = { screen = Screen.ADVANCED },
                             modifier = contentModifier,
                         )
@@ -175,6 +181,15 @@ class MainActivity : ComponentActivity() {
                             excludedNumbers = settings.excludedNumbers,
                             onChange = { numbers ->
                                 updateSettings { it.copy(excludedNumbers = numbers) }
+                            },
+                            modifier = contentModifier,
+                        )
+
+                        Screen.RECORDS -> RecordsScreen(
+                            records = records,
+                            onClear = {
+                                callRecordStore.clear()
+                                records = callRecordStore.list()
                             },
                             modifier = contentModifier,
                         )
@@ -214,6 +229,7 @@ class MainActivity : ComponentActivity() {
         // アプリの外で変わりうる状態なので、復帰のたびに読み直す。
         refreshSystemState()
         settings = settingsStore.load()
+        records = callRecordStore.list()
     }
 
     private fun refreshSystemState() {

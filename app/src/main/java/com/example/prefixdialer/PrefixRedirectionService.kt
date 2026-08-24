@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat
 class PrefixRedirectionService : CallRedirectionService() {
 
     private val settingsStore: SettingsStore by lazy { SettingsStore(this) }
+    private val callRecordStore: CallRecordStore by lazy { CallRecordStore(this) }
 
     override fun onPlaceCall(
         handle: Uri,
@@ -31,23 +32,36 @@ class PrefixRedirectionService : CallRedirectionService() {
     ) {
         val original = handle.schemeSpecificPart
 
-        val outcome = runCatching {
-            val settings = settingsStore.load()
-            val dial = RuleEngine.buildDialNumber(
+        val settings = runCatching { settingsStore.load() }.getOrElse { error ->
+            Log.e(TAG, "could not load settings; placing call unmodified", error)
+            placeCallUnmodified()
+            return
+        }
+
+        val decision = runCatching {
+            RuleEngine.evaluate(
                 raw = original,
                 settings = settings,
                 phoneAccountId = initialPhoneAccount.id,
                 isRoaming = PhoneAccounts.isRoaming(this),
             )
-            dial to settings
         }.getOrElse { error ->
             // 判定できなかったときは書き換えない。発信を失敗させるより素通しが安全。
             Log.e(TAG, "failed to evaluate rules; placing call unmodified", error)
-            null to null
+            DialDecision.Skip(SkipReason.UNPARSEABLE)
         }
 
-        val (dial, settings) = outcome
-        if (dial == null || settings == null) {
+        // 記録は書き換えの有無に関わらず残す。「なぜ付かなかったのか」を
+        // ユーザーが後から確認できるようにするため。
+        runCatching {
+            callRecordStore.record(
+                CallRecord.from(System.currentTimeMillis(), original, decision),
+                settings.callRecordLimit,
+            )
+        }.onFailure { Log.w(TAG, "could not save call record", it) }
+
+        val dial = decision.dialNumberOrNull
+        if (dial == null) {
             placeCallUnmodified()
             return
         }
