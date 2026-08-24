@@ -68,12 +68,6 @@ data class Settings(
         return phoneAccountId !in disabledPhoneAccountIds
     }
 
-    /** [number] が個別除外に登録されているか。 */
-    fun isExcluded(number: String?): Boolean {
-        if (number == null) return false
-        val digits = normalizeNumber(number)
-        return digits.isNotEmpty() && digits in excludedNumbers
-    }
 
     companion object {
 

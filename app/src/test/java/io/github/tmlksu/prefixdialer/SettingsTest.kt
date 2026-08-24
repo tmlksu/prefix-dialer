@@ -115,15 +115,6 @@ class SettingsTest {
         assertNull(dial(MOBILE, settings))
     }
 
-    @Test
-    fun `isExcluded は数字のみに正規化して照合する`() {
-        val settings = Settings(excludedNumbers = setOf("0312345678"))
-        assertTrue(settings.isExcluded("03-1234-5678"))
-        assertTrue(settings.isExcluded("0312345678"))
-        assertFalse(settings.isExcluded("0312345679"))
-        assertFalse(settings.isExcluded(null))
-        assertFalse(settings.isExcluded(""))
-    }
 
     // ------------------------------------------------------------------
     // 安全層は設定に関わらず貫通しない

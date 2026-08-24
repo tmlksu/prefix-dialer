@@ -1,7 +1,6 @@
 package io.github.tmlksu.prefixdialer
 
 import android.Manifest
-import android.app.Activity
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
@@ -38,13 +37,6 @@ data class SystemStatus(
     /** バッテリー最適化から除外されているか。One UI で履歴書き換えが殺されるのを防ぐ。 */
     val ignoringBatteryOptimizations: Boolean = false,
 ) {
-
-    /**
-     * 基本機能（プレフィックス付与）が動作する状態か。
-     *
-     * ロールだけで足りる。通話履歴の権限は基本機能には不要。
-     */
-    val readyForPrefixing: Boolean get() = hasRedirectionRole
 
     /** 履歴書き換え機能に必要な権限がすべて揃っているか。 */
     val readyForCallLogRewrite: Boolean
@@ -107,19 +99,5 @@ data class SystemStatus(
         fun ignoreBatteryOptimizationsIntent(context: Context): Intent =
             Intent(AndroidSettings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
                 .setData(Uri.parse("package:${context.packageName}"))
-
-        /** アプリの設定画面を開く Intent（権限を「今後表示しない」にされた場合の逃げ道）。 */
-        fun appSettingsIntent(context: Context): Intent =
-            Intent(AndroidSettings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                .setData(Uri.parse("package:${context.packageName}"))
-
-        /**
-         * 権限ダイアログが二度と出ない状態か（「今後表示しない」を選ばれた）。
-         * この場合はアプリ設定画面へ誘導するしかない。
-         */
-        fun isPermanentlyDenied(activity: Activity, permission: String): Boolean =
-            ContextCompat.checkSelfPermission(activity, permission) !=
-                PackageManager.PERMISSION_GRANTED &&
-                !activity.shouldShowRequestPermissionRationale(permission)
     }
 }
