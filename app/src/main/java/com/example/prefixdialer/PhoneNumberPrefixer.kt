@@ -1,69 +1,32 @@
 package com.example.prefixdialer
 
-import com.google.i18n.phonenumbers.NumberParseException
-import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType
-
 /**
- * 発信番号にプレフィックスを付けるかどうかを判定する純粋ロジック。
+ * 発信番号の書き換え判定の入り口。
  *
- * Android への依存を持たないので、ローカルユニットテストでそのまま検証できる。
- * 判定は libphonenumber に委ね、+81 <-> 先頭0 の変換や特番の仕分けを任せる。
+ * 実体は [RuleEngine] + [RuleSet] に移した。ここは呼び出し側のための薄い窓口で、
+ * 「現在有効なルールセット」を解決して [RuleEngine] に委譲する役目だけを持つ。
+ *
+ * 設定 UI と永続化が入ったら [activeRuleSet] を保存済みの値を返すよう差し替える。
+ * それまでは [Presets.default]（= MVP と同じ全種別 `0063`）を返す。
  */
 object PhoneNumberPrefixer {
 
-    /** 国内発信に付与するプレフィックス。 */
-    const val PREFIX = "0063"
+    /**
+     * 現在有効なルールセット。
+     *
+     * TODO(1.0): 設定画面の実装後、SharedPreferences 等から読み出した値に差し替える。
+     */
+    var activeRuleSet: RuleSet = Presets.default
 
-    private const val REGION_JP = "JP"
-
-    private val phoneUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
-
-    /** プレフィックス対象とする番号種別。 */
-    private val PREFIXABLE_TYPES = setOf(
-        PhoneNumberType.MOBILE,
-        PhoneNumberType.FIXED_LINE,
-        PhoneNumberType.FIXED_LINE_OR_MOBILE,
-        PhoneNumberType.VOIP, // 050 IP電話
-    )
+    /** 表示用の代表プレフィックス。複数種別で異なる場合は先頭のものを返す。 */
+    val PREFIX: String
+        get() = activeRuleSet.prefixes.firstOrNull() ?: ""
 
     /**
      * 発信すべき最終番号を返す。プレフィックス不要なら null（＝そのまま発信）。
      *
      * @param raw ダイヤラーから渡された生の番号文字列
      */
-    fun buildDialNumber(raw: String?): String? {
-        if (raw.isNullOrBlank()) return null
-
-        // 表示用の記号を除去（先頭の + は残す）
-        val cleaned = raw.trim().replace(Regex("[\\s\\-().]"), "")
-
-        // 0) 明示的に触らないケースを先に弾く
-        if (cleaned.startsWith(PREFIX)) return null              // 二重付与の防止
-        if (cleaned.startsWith("010")) return null               // 国際発信（例: 010 1 …）
-        if (!cleaned.startsWith("+") && cleaned.startsWith("00")) {
-            return null                                          // 他社の事業者識別番号(0033/0061等)
-        }
-
-        val number = try {
-            phoneUtil.parse(cleaned, REGION_JP)
-        } catch (e: NumberParseException) {
-            return null                                          // パース不能はそのまま発信
-        }
-
-        // 1) 日本(+81)以外は対象外（+1 などの海外番号）
-        if (number.countryCode != 81) return null
-        if (!phoneUtil.isValidNumber(number)) return null        // 110/119 等の短縮もここで除外
-
-        // 2) 番号種別で除外
-        //    TOLL_FREE(0120/0800), SHARED_COST(0570), PREMIUM_RATE(0990) などは付けない
-        if (phoneUtil.getNumberType(number) !in PREFIXABLE_TYPES) return null
-
-        // 3) 国内表記(先頭0付き)へ正規化してプレフィックスを付与
-        val national = phoneUtil
-            .format(number, PhoneNumberUtil.PhoneNumberFormat.NATIONAL)
-            .replace(Regex("[^0-9]"), "")
-
-        return PREFIX + national
-    }
+    fun buildDialNumber(raw: String?): String? =
+        RuleEngine.buildDialNumber(raw, activeRuleSet)
 }
