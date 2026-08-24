@@ -1,68 +1,41 @@
 # Prefix Dialer
 
-発信時に、国内の携帯・固定電話番号へ自動で `0063` プレフィックスを付ける Android アプリ。
+発信時に、国内の携帯・固定電話番号へ自動で事業者プレフィックス（例: `0063`）を付ける Android アプリ。
 標準の電話アプリを置き換えず、`CallRedirectionService`（Android 10+）で発信直前に番号を書き換える。
-通話履歴には元番号が残るよう、発信後に `CallLog` を書き戻す（電話帳マッチを維持）。
 
-対象端末: Samsung Galaxy S25 / One UI 7（Android 15）を想定。minSdk 29 / targetSdk 35。
+対象端末: Samsung Galaxy S25 / One UI 7（Android 15）で確認。minSdk 29 / targetSdk 35。
 
 ## ステータス
 
-- **MVP 動作中** — S25 実機で発信〜履歴書き換えまで確認済み（2026-08-24）
-- 公開アプリ化を見据えて開発中。残タスクは [ROADMAP.md](ROADMAP.md) 参照
-  （applicationId のリネーム、署名設定、Call Log 権限の Play ポリシー対応、プライバシーポリシー等）
-- 現状の `applicationId` は `io.github.tmlksu.prefixdialer`（公開前に要変更）
+1.0 に向けて開発中。**コードは想定機能をひととおり実装済みで、実機確認とリリース作業が残っている。**
+残タスクは [ROADMAP.md](ROADMAP.md)、判断待ちは [DECISIONS.md](DECISIONS.md) を参照。
 
-## プレフィックスの判定ロジック
+## できること
 
-`PhoneNumberPrefixer.buildDialNumber()` が心臓部。libphonenumber で正規化・種別判定する。
+- 番号種別（携帯 / 固定 / IP電話）ごとにプレフィックスと先頭 `0` の扱いを設定
+- 事業者プリセット（現在は G-Call のみ収録）
+- マスタースイッチ、回線（SIM）ごとの ON/OFF、ローミング中の自動停止
+- 番号単位の除外リスト
+- 発信記録 — 各発信で何をしたか、付かなかった場合はその理由
+- 通話履歴を元番号へ書き戻す（**オプトイン**。既定 OFF）
+- 設定の JSON エクスポート / インポート
 
-| 入力 | 判定 | 結果 |
-|---|---|---|
-| `090…` `080…` `070…`（携帯） | MOBILE | ✅ `0063` + 元番号 |
-| `03…` `06…` など（固定） | FIXED_LINE | ✅ |
-| `050…`（IP電話） | VOIP | ✅ |
-| `+8190…` など | +81→0 に正規化 | ✅ |
-| `0120…` `0800…` | TOLL_FREE | ❌ |
-| `0570…`（ナビダイヤル） | SHARED_COST | ❌ |
-| `0990…` | PREMIUM_RATE | ❌ |
-| `+1…` など海外 | 国番号≠81 | ❌ |
-| `010…`（国際発信） | 明示除外 | ❌ |
-| `0033…` など他社識別番号 | 明示除外 | ❌ |
-| `0063…`（付与済み） | 二重防止 | ❌ |
-| `110` `119` `118` `112` | 緊急通報（ハードガード） | ❌ |
-| `117` `171` `188` `189` など 3桁 | 特番（ハードガード） | ❌ |
-| `#7119` `#8000` `#9110` | #系ダイヤル（ハードガード） | ❌ |
-| `184…` `186…` | 発信者番号通知プレフィックス | ❌ |
-| `0312345678,,,123` | DTMF ポーズ付き | ❌ |
+## 安全性の設計
 
-### ルールモデル
+このアプリは発信番号を書き換える。**誤判定のコストが非対称**であることを設計の起点にしている。
 
-書き換えは `RuleSet`（ルールの並び）で表現する。上から評価し、最初にマッチしたものを適用する。
-
-```kotlin
-RuleSet(name = "G-Call", rules = listOf(
-    DialRule(RuleCondition.OfType(NumberCategory.MOBILE),     RuleAction.Apply("0063", LeadingZero.KEEP)),
-    DialRule(RuleCondition.OfType(NumberCategory.FIXED_LINE), RuleAction.Apply("0063", LeadingZero.KEEP)),
-))
-```
-
-先頭 `0` の扱い（`LeadingZero`）は **ルールごと** に持つ。事業者によっては携帯向けと固定向けで
-プレフィックスも先頭 0 の扱いも異なるため、事業者単位・プリセット単位では表現できない。
-
-| `LeadingZero` | `09012345678` に適用した結果 |
+| | 影響 |
 |---|---|
-| `KEEP` | `0063` + `09012345678` |
-| `STRIP` | `prefix` + `9012345678` |
-| `TO_COUNTRY_CODE` | `prefix` + `819012345678` |
+| 過剰にブロック | プレフィックスが付かない（割引が効かないだけ、実害なし） |
+| ブロック漏れ | 緊急通報が書き換わる / 意図しない回線で課金事故 |
 
-`RuleAction.PassThrough` を上位に置けば、広いルールから特定の番号帯だけを抜ける。
-現状はプレフィックスの変更に `Presets.kt` の編集が必要（1.0 で UI から設定可能にする）。
+したがって、迷ったら必ずブロック側に倒す。
 
 ### 緊急通報のハードガード
 
 `ProtectedNumbers` が、ユーザー設定より**上位の安全層**として動く。ここで保護された番号は
-どんなルール設定でも書き換えられない。
+どんなルール設定でも書き換えられない。意図的に凶悪なルールセットでも貫通しないことを
+テストで固定している。
 
 一覧を列挙して維持する方式は採らない。総務省の 1XY 割当には改廃があり（例: `177` 天気予報は
 2025-03-31 終了）、`#` 系 4 桁は所管がばらばらで公式の網羅リストが存在しないため、
@@ -85,66 +58,128 @@ libphonenumber の短縮番号データは**主軸に使えない**（8.13.42 �
 さらに `isPossibleShortNumberForRegion` は `09012345678` にも `true` を返すため、
 ガードに使うと通常の携帯番号まで巻き込む。よってライブラリは補助の網としてのみ使う。
 
+## ルールモデル
+
+書き換えは `RuleSet`（ルールの並び）で表現する。上から評価し、最初にマッチしたものを適用する。
+
+```kotlin
+RuleSet(name = "G-Call", rules = listOf(
+    DialRule(RuleCondition.OfType(NumberCategory.MOBILE),     RuleAction.Apply("0063", LeadingZero.KEEP)),
+    DialRule(RuleCondition.OfType(NumberCategory.FIXED_LINE), RuleAction.Apply("0063", LeadingZero.KEEP)),
+))
+```
+
+先頭 `0` の扱い（`LeadingZero`）は **ルールごと** に持つ。事業者によっては携帯向けと固定向けで
+プレフィックスも先頭 0 の扱いも異なるため、事業者単位・プリセット単位では表現できない。
+
+| `LeadingZero` | `09012345678` に適用した結果 |
+|---|---|
+| `KEEP` | `0063` + `09012345678` |
+| `STRIP` | `prefix` + `9012345678` |
+| `TO_COUNTRY_CODE` | `prefix` + `819012345678` |
+
+`RuleAction.PassThrough` を上位に置けば、広いルールから特定の番号帯だけを抜ける。
+
+### 判定の順序
+
+1. ローミング / 回線ごとの無効化
+2. **`ProtectedNumbers`** — 緊急通報・特番。ルールでは覆せない
+3. マスタースイッチ
+4. 個別除外リスト
+5. 二重付与・他社プレフィックス（`00XY`）・国際発信（`010`）の除外
+6. 日本の有効な番号かどうか
+7. **種別による除外** — フリーダイヤル `0120`/`0800`、ナビダイヤル `0570`、有料情報 `0990`。
+   これもルールでは覆せない
+8. ルールの評価
+
+2 と 7 がルールより上位にあるのが要点。プレフィックスやルールを UI から自由に編集できても、
+この 2 つはバイパスされない。
+
+## 権限
+
+**基本機能（プレフィックス付与）は通話履歴の権限を一切必要としない。**
+
+| 権限 | いつ要求するか | 何に使うか |
+|---|---|---|
+| `ROLE_CALL_REDIRECTION` | 初回セットアップ | 発信直前の番号書き換え。端末に 1 アプリのみ |
+| `READ_PHONE_STATE` | 回線ごとの設定を開いたとき | 設定画面に回線名を表示する。**判定には使わない** |
+| `READ/WRITE_CALL_LOG` `READ_CONTACTS` `POST_NOTIFICATIONS` | 履歴書き換えを有効にしたとき | 発信後に履歴を元番号へ戻す |
+
+通話履歴の権限はインストール直後には要求しない。機能を有効化した瞬間に初めて求める。
+
 ## ビルド
 
-Android Studio（Koala 以降推奨）で `PrefixDialer/` を開くだけ。あるいは JDK 17 + Android SDK
+Android Studio で `PrefixDialer/` を開くだけ。あるいは JDK 17 + Android SDK
 (platform-35 / build-tools 35.0.0) があれば同梱の Gradle Wrapper で CLI ビルドできる:
 
 ```
-./gradlew test          # ユニットテスト 52件（判定 19 / 緊急通報の不変条件 13 / ルール 15 / プリセット 5）
-./gradlew assembleDebug # APK -> app/build/outputs/apk/debug/app-debug.apk
+./gradlew testDebugUnitTest   # ユニットテスト 113 件
+./gradlew assembleDebug       # APK -> app/build/outputs/apk/debug/
+./gradlew assembleRelease     # keystore.properties があれば署名される
 ```
 
 SDK の場所は `local.properties`（`sdk.dir=...`、リポジトリには含めない）か環境変数
 `ANDROID_HOME` で指定する。
 
-## 端末での有効化（順番どおりに）
+リリース署名は `keystore.properties.example` をコピーして設定する。
+このファイルが無い場合は署名設定を作らず、release ビルドは未署名になる（意図した挙動）。
 
-アプリを起動し、画面のボタンで:
+## 端末での有効化
 
-1. **通話リダイレクトを有効化** — `ROLE_CALL_REDIRECTION` を取得（端末に1アプリのみ）
-2. **権限を許可** — 通話履歴の読み書き・連絡先・通知
-3. **バッテリー最適化を解除** — One UI が履歴書き換えサービスを殺さないため（重要）
+アプリを起動し、画面の指示に従う:
 
-3項目すべて ✅ になれば準備完了。
+1. **通話リダイレクトを有効化** — `ROLE_CALL_REDIRECTION` を取得（端末に 1 アプリのみ）
+2. **書き換えルールを設定** — プリセットを選ぶか、種別ごとに手で設定
+3. （任意）**詳細設定で通話履歴の書き換えを有効化** — 権限とバッテリー最適化の解除を案内
 
 ## 動作確認
 
-1. 標準の電話アプリで自分の携帯などへ発信 → 実際には `0063` 付きで発信される
-2. 通話履歴を開く → 数秒以内に元番号へ戻り、連絡先名が表示されることを確認
+**緊急通報番号には絶対に発信しないこと。** `110` / `118` / `119` / `112` および
+`#7119` / `#8000` / `#9110` / `#8103` は確認に使わない。実害なく確認できるのは
+`117`（時報）程度で、これも必要最小限に留める。
 
-`adb logcat -s PrefixRedirection CallLogRewrite` で書き換えの流れを追える。
+発信後、アプリの「発信記録」を開けば、その発信で何をしたか（付かなかった場合はその理由）が分かる。
+`adb logcat -s PrefixRedirection CallLogRewrite` でも追える。
 
 ## Samsung / One UI の既知の注意点
 
-- **バッテリー最適化の解除は必須級。** 未設定だと発信後の履歴書き換えサービスが即座に殺され、
-  履歴が `0063…` のまま残ることがある。設定 → アプリ → 本アプリ → バッテリー →「制限なし」も併用推奨。
-- **Samsung Cloud の通話履歴同期が ON** だと、書き換えがクラウド側の値で巻き戻ることがある。
-  検証時は一旦 OFF にして切り分ける。
-- **純正ダイヤラーの表示キャッシュ**により、履歴一覧の表示が一瞬 `0063…` に見えてから元番号へ更新される
-  ことがある。`CACHED_NAME` も併せて更新して表示ズレを抑えている。
-- 緊急番号は `CallRedirectionService` 側でも OS が保護するが、`ProtectedNumbers` で独立に弾いている
-  （OS の保護に依存しない）。
+- **履歴書き換えを使う場合、バッテリー最適化の解除は必須級。** 未設定だと発信後の書き換え
+  サービスが即座に殺され、履歴がプレフィックス付きのまま残ることがある
+- **Samsung Cloud の通話履歴同期が ON** だと、書き換えがクラウド側の値で巻き戻ることがある
+- **純正ダイヤラーの表示キャッシュ**により、履歴一覧の表示が一瞬プレフィックス付きに見えてから
+  元番号へ更新されることがある。`CACHED_NAME` も併せて更新して表示ズレを抑えている
+- 緊急番号は OS 側でも保護されるが、`ProtectedNumbers` で独立に弾いている（OS の保護に依存しない）
 
 ## 制約
 
-- `WRITE_CALL_LOG` は Google Play ではセンシティブ権限。自分用・sideload 前提なら問題なし。
-  Play 公開時は審査が厳しい。
-- 通話リダイレクトアプリは端末に1つだけ。他の番号書き換え／着信拒否系アプリとは排他。
+- 通話リダイレクトアプリは端末に 1 つだけ。他の番号書き換え／着信拒否系アプリとは排他。
+  他アプリに奪われるとプレフィックスが黙って付かなくなるため、アプリ起動時に検知して警告する
+- `WRITE_CALL_LOG` は Google Play のセンシティブ権限。履歴書き換えをオプトインにすることで、
+  この機能を使わない限り要求しない構成にしている
 
 ## ファイル構成
 
 ```
-app/src/main/java/io.github.tmlksu.prefixdialer/
-  PhoneNumberPrefixer.kt      判定の入り口（有効なルールセットを解決して委譲）
-  DialRule.kt                 ルールのデータモデル（種別×prefix×先頭0の扱い）
-  RuleEngine.kt               ルール評価器（Android非依存・テスト対象）
-  Presets.kt                  事業者プリセット（裏取りできたものだけ収録）
+app/src/main/java/io/github/tmlksu/prefixdialer/
   ProtectedNumbers.kt         緊急通報・特番のハードガード（設定より上位の安全層）
+  DialRule.kt                 ルールのデータモデル（種別 × prefix × 先頭0の扱い）
+  RuleEngine.kt               ルール評価器（Android非依存・テスト対象）
+  DialDecision.kt             判定結果と、書き換えなかった理由
+  Presets.kt                  事業者プリセット（裏取りできたものだけ収録）
+  Settings.kt                 設定のデータモデル
+  SettingsJson.kt             設定の JSON 相互変換（永続化とエクスポートで共用）
+  SettingsStore.kt            設定の永続化（SharedPreferences）
+  Json.kt                     依存を持たない最小限の JSON 実装
+  CallRecord.kt               発信記録のモデル
+  CallRecordStore.kt          発信記録の保存
+  PhoneAccounts.kt            回線一覧とローミング状態
+  SystemStatus.kt             ロール・権限の状態
   PrefixRedirectionService.kt 発信直前に番号を書き換える
-  CallLogRewriteService.kt    発信後に履歴を元番号へ戻す（短命FGS）
-  PendingRewrites.kt          発信番号→元番号 の一時対応表
-  MainActivity.kt             ロール/権限/バッテリーのセットアップ画面
-app/src/test/java/io.github.tmlksu.prefixdialer/
-  PhoneNumberPrefixerTest.kt  buildDialNumber の網羅テスト
+  CallLogRewriteService.kt    発信後に履歴を元番号へ戻す（短命FGS・オプトイン）
+  MainActivity.kt             設定画面のホスト
+  ui/                         Compose の各画面
 ```
+
+## ライセンス
+
+MIT（[LICENSE](LICENSE)）
