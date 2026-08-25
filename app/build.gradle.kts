@@ -17,7 +17,16 @@ val keystoreProperties = Properties().apply {
     val file = rootProject.file("keystore.properties")
     if (file.exists()) file.inputStream().use { load(it) }
 }
-val hasSigningConfig = keystoreProperties.getProperty("storeFile") != null
+
+/**
+ * 署名に必要な値が揃っているか。
+ *
+ * パスワードが空のまま `keystore.properties` を置いた場合も未設定として扱う。
+ * 中途半端な設定でビルドを失敗させるより、未署名で通したほうが原因が分かりやすい。
+ */
+val hasSigningConfig = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+    .all { !keystoreProperties.getProperty(it).isNullOrBlank() } &&
+    rootProject.file(keystoreProperties.getProperty("storeFile") ?: "").exists()
 
 android {
     namespace = "io.github.tmlksu.prefixdialer"
@@ -56,6 +65,13 @@ android {
         release {
             if (hasSigningConfig) {
                 signingConfig = signingConfigs.getByName("release")
+            } else {
+                // 未署名で通ること自体は意図した挙動（鍵の無い CI でもビルドできる）。
+                // ただし黙って未署名 APK が出来ると、配布直前まで気づけない。
+                logger.lifecycle(
+                    "[PrefixDialer] keystore.properties が無いか値が空のため、" +
+                        "release APK は未署名になります。",
+                )
             }
             isMinifyEnabled = true
             isShrinkResources = true
@@ -64,16 +80,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-
-    /**
-     * release 変種のユニットテストは動かさない。
-     *
-     * テスト対象は Android 非依存の純粋ロジックだけなので debug 変種で十分であり、
-     * minify 後のクラスに対してテストをコンパイルしようとして失敗するのを避ける。
-     */
-    androidComponents {
-        beforeVariants(selector().withBuildType("release")) { it.enableUnitTest = false }
     }
 
     compileOptions {
