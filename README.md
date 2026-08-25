@@ -28,7 +28,7 @@ aapt2 dump permissions app-release.apk   # INTERNET が無いことを確認
 ## できること
 
 - 番号種別（携帯 / 固定 / IP電話）ごとにプレフィックスと先頭 `0` の扱いを設定
-- 事業者プリセット（現在は G-Call のみ収録）
+- 事業者プリセット（G-Call / 楽天でんわ）
 - マスタースイッチ、回線（SIM）ごとの ON/OFF、ローミング中の自動停止
 - 番号単位の除外リスト
 - 発信記録 — 各発信で何をしたか、付かなかった場合はその理由
@@ -128,7 +128,7 @@ Android Studio で `PrefixDialer/` を開くだけ。あるいは JDK 17 + Andro
 (platform-35 / build-tools 35.0.0) があれば同梱の Gradle Wrapper で CLI ビルドできる:
 
 ```
-./gradlew testDebugUnitTest   # ユニットテスト 113 件
+./gradlew testDebugUnitTest   # ユニットテスト 116 件
 ./gradlew assembleDebug       # APK -> app/build/outputs/apk/debug/
 ./gradlew assembleRelease     # keystore.properties があれば署名される
 ```
@@ -197,4 +197,4 @@ app/src/main/java/io/github/tmlksu/prefixdialer/
 
 ## ライセンス
 
-MIT（[LICENSE](LICENSE)）
+MIT（[LICENSE](LICENSE)）。同梱する第三者ソフトウェアの表記は [NOTICE](NOTICE) を参照。
