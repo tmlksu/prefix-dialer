@@ -1,0 +1,43 @@
+Prefix Dialer
+Copyright (c) 2026 tmlksu
+
+This product includes software developed by third parties, listed below.
+
+--------------------------------------------------------------------------------
+libphonenumber
+  https://github.com/google/libphonenumber
+  Copyright (C) 2009 The Libphonenumber Authors
+  Licensed under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Used for parsing Japanese phone numbers and classifying them by type
+  (mobile / landline / VoIP / toll-free / …).
+
+--------------------------------------------------------------------------------
+AndroidX libraries (androidx.core, androidx.activity, androidx.lifecycle,
+androidx.compose.*)
+  https://developer.android.com/jetpack/androidx
+  Copyright (C) The Android Open Source Project
+  Licensed under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+Material Components for Android
+  https://github.com/material-components/material-components-android
+  Copyright (C) The Android Open Source Project
+  Licensed under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
+Reference data used to build the emergency and service number guard came from
+the following public sources. No code or data files were copied from them; they
+were used to verify behaviour that is implemented independently.
+
+  Ministry of Internal Affairs and Communications (総務省)
+    1XY number usage guidelines
+    https://www.soumu.go.jp/main_sosiki/joho_tsusin/top/tel_number/1xy_list.html
+
+  NTT East (NTT東日本)
+    Three-digit telephone services
+    https://flets.com/denwa/3number/
