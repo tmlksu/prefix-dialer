@@ -92,9 +92,16 @@ keytool -genkeypair -v -keystore release.keystore -alias prefixdialer \
 書き換え前に `git bundle` でバックアップを取得している。
 GitHub 上のリポジトリは書き換え時点で非公開だったため、旧アドレスは未露出。
 
-⚠️ `origin/main` には書き換え前の初回コミットが残っている。
-公開前に **force push で置き換える**こと（`git push --force-with-lease`）。
-通常の push では旧コミットが残ってしまう。
+⚠️ **GitHub 側（`git@github.com:tmlksu/prefix-dialer.git`）には書き換え前の
+初回コミットがまだ残っている。** ローカルからは完全に消したが、リモートは別。
+
+force push で置き換えても、GitHub は到達不能になった古いコミットを SHA 指定で
+しばらく参照できる状態に残す。実用上は SHA を知らないと辿れないが、確実を期すなら
+**GitHub 上のリポジトリを一度削除して作り直す**のが最も確実。
+現在 push 済みなのは初回コミット 1 つだけなので、失うものはない。
+
+- [ ] リポジトリを作り直す、または `git push --force-with-lease` する
+- [ ] そのうえで public へ切り替える
 
 ### D-20. GitHub 配布 APK と Play 版の署名鍵 ★あとで揃えられない
 
