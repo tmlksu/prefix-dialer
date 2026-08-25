@@ -80,20 +80,21 @@ keytool -genkeypair -v -keystore release.keystore -alias prefixdialer \
 
 ### D-19. GitHub 公開前のコミット著者メールアドレス ★公開後は手遅れ
 
-現在、全 17 コミットの著者が `tmlksu <<redacted>>` になっている。
-**公開リポジトリのコミット著者メールは誰でも取得でき、収集ボットの対象になる。**
+公開リポジトリのコミット著者メールは誰でも API で取得でき、収集ボットの対象になる。
+公開後に履歴を書き換えても、フォークやキャッシュに残るため取り返しがつかない。
 
-公開してしまうと、後から履歴を書き換えてもフォークやキャッシュに残るため
-取り返しがつかない。**push する前**に決める必要がある。
+**回答:** 書き換える。
 
-選択肢:
-- **A. このまま公開** — 特に気にしないなら何もしなくてよい
-- **B. GitHub の noreply に書き換えてから公開**（推奨）
-  `<ID>+tmlksu@users.noreply.github.com` 形式。GitHub の
-  Settings → Emails → 「Keep my email addresses private」で確認できる。
-  まだ公開していないので、履歴の書き換えは安全に実行できる
+**対応（2026-08-26）:** 全 19 コミットの著者・コミッタを GitHub の noreply
+（`<ID>+tmlksu@users.noreply.github.com`）へ書き換え済み。ローカルの
+`user.email` も同じ値に設定したので、以降のコミットも自動的にこの形式になる。
 
-**回答:**
+書き換え前に `git bundle` でバックアップを取得している。
+GitHub 上のリポジトリは書き換え時点で非公開だったため、旧アドレスは未露出。
+
+⚠️ `origin/main` には書き換え前の初回コミットが残っている。
+公開前に **force push で置き換える**こと（`git push --force-with-lease`）。
+通常の push では旧コミットが残ってしまう。
 
 ### D-20. GitHub 配布 APK と Play 版の署名鍵 ★あとで揃えられない
 
@@ -112,7 +113,14 @@ Play 版に移行できない**（設定も消える）。
 - **B. Play も視野に入れる**（推奨）— 初回登録時に既存の鍵をアップロードする。
   それまで `release.keystore` を絶対に紛失しないこと
 
-**回答:**
+**回答:** B。あとで Play 配布する。署名をあえて変える理由がないので、
+`release.keystore` をアプリ署名鍵としてアップロードする。
+
+**これに伴う制約:**
+- Play への初回登録時に「既存のアプリ署名鍵をアップロード」を選ぶこと。
+  **後から変更できない。** 既定のまま進めると Google 生成の鍵になり、
+  GitHub 版と Play 版が上書き更新できなくなる
+- それまで `release.keystore` と `keystore.properties` を紛失しないこと
 
 ### D-03. Play Console への提出
 
