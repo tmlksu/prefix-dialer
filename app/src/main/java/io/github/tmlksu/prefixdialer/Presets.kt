@@ -17,6 +17,7 @@ package io.github.tmlksu.prefixdialer
  *    プレフィックスや先頭 0 の扱いが違う事業者があるため、両方を個別に確認すること）
  * 2. 実機で発信し、実際に接続されること・明細で意図した料金になることを確認する
  * 3. [PresetsTest] に期待値を追加する
+ * 4. **出典と検証状況を KDoc に書き残す。** 実機未確認のものはその旨を明記する
  */
 object Presets {
 
@@ -45,6 +46,44 @@ object Presets {
     )
 
     /**
+     * 楽天でんわ。
+     *
+     * 全種別とも `003768` + 先頭 0 を残した国内表記。
+     *
+     * 出典:
+     *  - 公式「楽天でんわの仕組み」<https://denwa.rakuten.co.jp/about.html>
+     *    — 相手の番号に「0037-68-」を付けて発信する、と記載
+     *  - ITmedia Mobile の実機記事（2016-03-17）
+     *    <https://www.itmedia.co.jp/mobile/articles/1603/17/news008.html>
+     *    — 「090-8＊＊＊-＊＊＊＊」をダイヤルすると「0037-68-」が頭に付いた状態で
+     *    発信される、という具体例。ここから先頭 0 を残す形式であることを確認した
+     *
+     * **実機での発信・明細確認は未実施**（DECISIONS.md H-06）。
+     * 公式資料と実機記事から形式は確定しているが、課金に直結するため
+     * 実際に使う前に 1 回は自分の回線で確かめること。
+     *
+     * なお楽天でんわは家族間や同一キャリア間の無料通話が有料になる。
+     * その相手は「除外する番号」に登録して使うことを想定している。
+     */
+    val rakutenDenwa = RuleSet(
+        name = "楽天でんわ",
+        rules = listOf(
+            DialRule(
+                condition = RuleCondition.OfType(NumberCategory.MOBILE),
+                action = RuleAction.Apply("003768", LeadingZero.KEEP),
+            ),
+            DialRule(
+                condition = RuleCondition.OfType(NumberCategory.FIXED_LINE),
+                action = RuleAction.Apply("003768", LeadingZero.KEEP),
+            ),
+            DialRule(
+                condition = RuleCondition.OfType(NumberCategory.VOIP),
+                action = RuleAction.Apply("003768", LeadingZero.KEEP),
+            ),
+        ),
+    )
+
+    /**
      * 組み込みプリセットの識別子。
      *
      * [RuleSet.name] は設定として永続化され、エクスポートしたファイルにも入る。
@@ -62,7 +101,7 @@ object Presets {
     val custom = RuleSet(name = CUSTOM_ID, rules = emptyList())
 
     /** UI のプリセット選択に並べる一覧。 */
-    val all: List<RuleSet> = listOf(gCall, custom)
+    val all: List<RuleSet> = listOf(gCall, rakutenDenwa, custom)
 
     /**
      * 初期状態のルールセット。

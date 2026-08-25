@@ -22,6 +22,26 @@ class PresetsTest {
     }
 
     @Test
+    fun `楽天でんわは全種別に003768を先頭0を残して付ける`() {
+        val rs = Presets.rakutenDenwa
+        assertEquals("003768" + "09012345678", RuleEngine.buildDialNumber("09012345678", rs))
+        assertEquals("003768" + "0312345678", RuleEngine.buildDialNumber("0312345678", rs))
+        assertEquals("003768" + "05012345678", RuleEngine.buildDialNumber("05012345678", rs))
+    }
+
+    @Test
+    fun `楽天でんわのプレフィックスが付いた番号には二重に付けない`() {
+        // 003768 は 00XY 形式なので、他社プレフィックスの検出でも二重付与が防がれる
+        assertNull(RuleEngine.buildDialNumber("00376809012345678", Presets.rakutenDenwa))
+        assertNull(RuleEngine.buildDialNumber("00376809012345678", Presets.gCall))
+    }
+
+    @Test
+    fun `プリセットの名前が重複していない`() {
+        assertEquals(Presets.all.size, Presets.all.map { it.name }.toSet().size)
+    }
+
+    @Test
     fun `カスタムは初期状態では1件も書き換えない`() {
         for (n in listOf("09012345678", "0312345678", "05012345678")) {
             assertNull(RuleEngine.buildDialNumber(n, Presets.custom))
