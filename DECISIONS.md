@@ -234,8 +234,15 @@ R8 を有効にしたため、debug では出ない問題が release だけで�
 ./gradlew assembleRelease   # keystore.properties があれば署名される
 ```
 
-- [x] 通常の発信にプレフィックスが付く（2026-08-26 実機確認）
+- [x] 通常の発信にプレフィックスが付く（2026-08-26 実機確認。**ただし debug ビルド**）
+- [ ] **release APK で** 通常の発信にプレフィックスが付く
 - [ ] release APK で設定画面が正常に表示・保存される
+
+**2026-08-26:** release APK のインストールが「インストールされませんでした」で失敗。
+原因は R8 ではなく署名鍵の違いだった。debug 版と release 版は applicationId が同じで
+署名が異なるため、Android が上書き更新を拒否する
+（`INSTALL_FAILED_UPDATE_INCOMPATIBLE`）。debug 版をアンインストールしてから入れる。
+配布後にユーザーも踏む問題なので README と CHANGELOG に記載した。
 
 **静的検証（2026-08-26）:** release APK を展開し、R8 通過後も
 `PhoneNumberMetadataProto_JP` / `ShortNumberMetadataProto_JP` が残っていること、
