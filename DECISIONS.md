@@ -201,6 +201,9 @@ DataStore は依存が増える割に、この規模（ルールセット1つ + 
 
 **回答:** アプリアイコン、もう少し画像部分を小さくしてください。Galaxyのアイコンの枠からはみ出てます
 
+**対応（2026-08-26）:** アダプティブアイコンの安全領域（中央 66dp の円）に収まるよう
+縮小した。実機で確認いただき OK。
+
 ---
 
 ## 🔵 あなたにしかできない作業
@@ -231,8 +234,13 @@ R8 を有効にしたため、debug では出ない問題が release だけで�
 ./gradlew assembleRelease   # keystore.properties があれば署名される
 ```
 
-- [ ] release APK で通常の発信にプレフィックスが付く
+- [x] 通常の発信にプレフィックスが付く（2026-08-26 実機確認）
 - [ ] release APK で設定画面が正常に表示・保存される
+
+**静的検証（2026-08-26）:** release APK を展開し、R8 通過後も
+`PhoneNumberMetadataProto_JP` / `ShortNumberMetadataProto_JP` が残っていること、
+libphonenumber のクラスと 2 つの Service が難読化されずに保持されていることを確認した。
+keep ルールは効いている。
 
 ### H-06. 楽天でんわプリセットの実機確認
 

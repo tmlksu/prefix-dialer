@@ -37,7 +37,7 @@ android {
         minSdk = 29          // Android 10: CallRedirectionService が使える最低ライン
         targetSdk = 35       // Android 15 (S25 / One UI 7)
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
