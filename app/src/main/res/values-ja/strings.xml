@@ -85,8 +85,9 @@
     <string name="calllog_state_on">有効</string>
     <string name="calllog_note_permission">通話履歴の読み書き権限が必要です。許可するまでこの機能は動作しません。</string>
     <string name="calllog_note_permission_action">権限を許可する</string>
-    <string name="calllog_note_battery">バッテリー最適化が有効だと、書き換え処理が途中で止められることがあります（Samsung / One UI では特に起きやすい）。</string>
-    <string name="calllog_note_battery_action">バッテリー最適化を解除する</string>
+    <string name="calllog_note_battery">バッテリー最適化が有効だと、書き換え処理が途中で止められることがあります（Samsung / One UI では特に起きやすい）。開いた画面でこのアプリを探し、電池の最適化を解除するか「制限なし」を選んでください。</string>
+    <string name="battery_settings_manual">設定 → アプリ → Prefix Dialer → バッテリー を開き、「制限なし」を選んでください。</string>
+    <string name="calllog_note_battery_action">バッテリー設定を開く</string>
     <string name="calllog_note_off">この機能を使わない場合、通話履歴の権限は一切要求されません。履歴にはプレフィックス付きの番号が残ります。</string>
     <string name="calllog_permission_denied">通話履歴の権限が無いため、履歴の書き換えは有効にできません</string>
 

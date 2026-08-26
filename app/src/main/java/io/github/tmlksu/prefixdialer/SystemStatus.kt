@@ -94,10 +94,28 @@ data class SystemStatus(
             return roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_REDIRECTION)
         }
 
-        /** バッテリー最適化からの除外を要求する Intent。 */
-        @Suppress("BatteryLife") // 履歴書き換えを有効にした場合のみ案内する
-        fun ignoreBatteryOptimizationsIntent(context: Context): Intent =
-            Intent(AndroidSettings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+        /**
+         * バッテリー最適化の設定へ誘導する Intent の候補。先頭から順に試す。
+         *
+         * `ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`（その場で許可を求めるダイアログ）は
+         * 使わない。あれは `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` 権限の宣言が必須で、
+         * 未宣言だと**何も起きずに失敗する**（Galaxy S25 で確認）。かつこの権限は
+         * Google Play が用途を限定している制限付き権限で、宣言すると審査で問題になりうる。
+         *
+         * そこで設定画面へ送る方式にした。ユーザーの操作は 1 手増えるが、
+         * 権限を増やさずに済み、確実に目的の画面へ辿り着ける。
+         *
+         * 1. 電池の最適化の一覧（素の Android ではここが最短）
+         * 2. アプリ情報の画面（Samsung / One UI ではバッテリー設定がこの配下にある）
+         */
+        fun batteryOptimizationIntents(context: Context): List<Intent> = listOf(
+            Intent(AndroidSettings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS),
+            appDetailsIntent(context),
+        )
+
+        /** アプリ情報の画面を開く Intent。 */
+        fun appDetailsIntent(context: Context): Intent =
+            Intent(AndroidSettings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 .setData(Uri.parse("package:${context.packageName}"))
     }
 }

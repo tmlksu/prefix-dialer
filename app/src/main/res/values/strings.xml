@@ -92,8 +92,9 @@
     <string name="calllog_state_on">On</string>
     <string name="calllog_note_permission">Call log read and write permissions are required. This feature does nothing until they are granted.</string>
     <string name="calllog_note_permission_action">Grant permissions</string>
-    <string name="calllog_note_battery">With battery optimisation enabled the rewrite can be stopped part-way, which is especially common on Samsung / One UI.</string>
-    <string name="calllog_note_battery_action">Disable battery optimisation</string>
+    <string name="calllog_note_battery">With battery optimisation enabled the rewrite can be stopped part-way, which is especially common on Samsung / One UI. Find this app on the screen that opens and either remove it from battery optimisation or set it to unrestricted.</string>
+    <string name="battery_settings_manual">Please open Settings → Apps → Prefix Dialer → Battery and allow unrestricted background usage.</string>
+    <string name="calllog_note_battery_action">Open battery settings</string>
     <string name="calllog_note_off">If you leave this off, no call log permission is ever requested. The prefix will remain visible in your call history.</string>
     <string name="calllog_permission_denied">Call log rewriting cannot be enabled without call log permissions</string>
 

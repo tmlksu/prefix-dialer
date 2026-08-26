@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.telecom.TelecomManager
+import android.telephony.SubscriptionInfo
+import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -49,12 +51,20 @@ object PhoneAccounts {
         if (!hasPermission(context)) return emptyList()
         val telecom = context.getSystemService(TelecomManager::class.java) ?: return emptyList()
 
+        // SIM 回線の名前は SubscriptionManager から取る。
+        // TelecomManager の PhoneAccount.label は SIM 回線では空になる端末があり
+        // （Galaxy S25 で確認）、その場合 handle.id すなわち購読 ID の数字が
+        // そのまま画面に出てしまう。「3」「4」では自分のどの回線か分からない。
+        val simNames = simDisplayNames(context)
+
         return try {
             telecom.callCapablePhoneAccounts.mapNotNull { handle ->
                 val id = handle.id?.takeIf { it.isNotEmpty() } ?: return@mapNotNull null
-                val label = runCatching {
-                    telecom.getPhoneAccount(handle)?.label?.toString()
-                }.getOrNull()?.takeIf { it.isNotBlank() } ?: id
+                val label = simNames[id]
+                    // 通話アプリが登録した回線（SIP アプリ等）はこちらに名前がある
+                    ?: runCatching { telecom.getPhoneAccount(handle)?.label?.toString() }
+                        .getOrNull()?.takeIf { it.isNotBlank() }
+                    ?: id
                 Line(id, label)
             }
         } catch (e: SecurityException) {
@@ -62,6 +72,34 @@ object PhoneAccounts {
             Log.w(TAG, "could not list phone accounts", e)
             emptyList()
         }
+    }
+
+    /**
+     * 購読 ID（`PhoneAccountHandle.id` と同じ値）から SIM の表示名への対応。
+     *
+     * 表示名はユーザーが端末の設定で付けた名前（`displayName`）を優先する。
+     * 設定画面で見ているものと同じ文字列が出たほうが分かりやすいため。
+     * 名前が無ければキャリア名、それも無ければスロット番号にする。
+     */
+    private fun simDisplayNames(context: Context): Map<String, String> = try {
+        val manager = context.getSystemService(SubscriptionManager::class.java)
+        val subscriptions = manager?.activeSubscriptionInfoList.orEmpty()
+        // 同じキャリアの 2 枚挿しでは名前が同じになりうるので、複数あるときは
+        // スロット番号を添えて区別できるようにする。
+        val needsSlot = subscriptions.size > 1
+        subscriptions.associate { info ->
+            info.subscriptionId.toString() to info.displayLabel(needsSlot)
+        }
+    } catch (e: SecurityException) {
+        Log.w(TAG, "could not read subscription info", e)
+        emptyMap()
+    }
+
+    private fun SubscriptionInfo.displayLabel(withSlot: Boolean): String {
+        val name = displayName?.toString()?.takeIf { it.isNotBlank() }
+            ?: carrierName?.toString()?.takeIf { it.isNotBlank() }
+            ?: "SIM ${simSlotIndex + 1}"
+        return if (withSlot) "$name (SIM ${simSlotIndex + 1})" else name
     }
 
     /**

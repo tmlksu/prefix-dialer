@@ -205,11 +205,7 @@ class MainActivity : ComponentActivity() {
                             onEnableCallLogRewrite = {
                                 callLogPermissionLauncher.launch(SystemStatus.callLogPermissions())
                             },
-                            onRequestBatteryExemption = {
-                                systemSettingsLauncher.launch(
-                                    SystemStatus.ignoreBatteryOptimizationsIntent(this),
-                                )
-                            },
+                            onRequestBatteryExemption = ::openBatterySettings,
                             onRequestPhoneStatePermission = {
                                 phoneStatePermissionLauncher.launch(PhoneAccounts.PERMISSION)
                             },
@@ -238,6 +234,19 @@ class MainActivity : ComponentActivity() {
         status = SystemStatus.read(this)
         hasPhoneStatePermission = PhoneAccounts.hasPermission(this)
         lines = PhoneAccounts.list(this)
+    }
+
+    /**
+     * バッテリー最適化の設定へ送る。
+     *
+     * 端末によって開ける画面が違うので候補を順に試す。どれも開けなかった場合は
+     * 黙って失敗せず、手順を案内する（何も起きないのが一番困る）。
+     */
+    private fun openBatterySettings() {
+        for (intent in SystemStatus.batteryOptimizationIntents(this)) {
+            if (runCatching { systemSettingsLauncher.launch(intent) }.isSuccess) return
+        }
+        toast(R.string.battery_settings_manual)
     }
 
     private fun requestRedirectionRole() {
