@@ -5,10 +5,12 @@
 
 対象端末: Samsung Galaxy S25 / One UI 7（Android 15）で確認。minSdk 29 / targetSdk 35。
 
-## ステータス
+## ダウンロード
 
-1.0 に向けて開発中。**コードは想定機能をひととおり実装済みで、実機確認とリリース作業が残っている。**
-残タスクは [ROADMAP.md](ROADMAP.md)、判断待ちは [DECISIONS.md](DECISIONS.md) を参照。
+[Releases](https://github.com/tmlksu/prefix-dialer/releases/latest) から APK を取得してください。
+
+現在の最新は **1.0.0**。変更履歴は [CHANGELOG.md](CHANGELOG.md)、
+今後の予定は [ROADMAP.md](ROADMAP.md) を参照。
 
 ## プライバシー
 

@@ -4,7 +4,8 @@
 
 ## 現状
 
-コードは 1.0 の想定機能をひととおり実装済み。**実機確認とリリース作業が残っている。**
+**1.0.0 を GitHub Releases で公開済み（2026-08-26）。**
+https://github.com/tmlksu/prefix-dialer/releases/tag/v1.0.0
 
 - ✅ 設定に従って発信番号を書き換え（`CallRedirectionService`）
 - ✅ 緊急通報・特番のハードガード（`ProtectedNumbers`）— ユーザー設定より上位の安全層
@@ -33,10 +34,11 @@
 
 ### リリース作業（ブロッカー）
 
-- [ ] リリース用 keystore の作成（[DECISIONS.md](DECISIONS.md) D-01）
-- [ ] プライバシーポリシーの本文と公開先 URL（D-03）
-- [ ] applicationId の最終確定（D-10。公開後は変更不可）
-- [ ] 配布（GitHub Releases / Play）
+- [x] リリース用 keystore の作成（[DECISIONS.md](DECISIONS.md) D-01）
+- [x] プライバシーポリシーの本文と公開先 URL（D-03）
+- [x] applicationId の確定（D-10）— `io.github.tmlksu.prefixdialer`
+- [x] GitHub Releases での配布
+- [ ] Play への提出（D-03 / D-20）
 
 ### プリセットの拡充
 
