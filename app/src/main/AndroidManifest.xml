@@ -5,18 +5,10 @@
          プレフィックスを付けるかどうかの判定には不要（onPlaceCall が PhoneAccountHandle を直接渡すため）。 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <!-- 以下は「通話履歴の書き換え」を有効にした場合のみ実行時に要求する。
-         インストール直後には要求しない。 -->
-    <!-- 通話履歴の読み書き（発信後にprefixを元番号へ戻すため） -->
-    <uses-permission android:name="android.permission.READ_CALL_LOG" />
-    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
-    <!-- 履歴の表示名を連絡先から補完するため -->
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-
-    <!-- 履歴書き換えを短命フォアグラウンドサービスで確実に走らせる -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SHORT_SERVICE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 通話履歴まわりの権限とサービスは github フレーバーにのみ存在する。
+         Google Play は、既定の電話アプリでないアプリが CALL_LOG 権限を
+         マニフェストに宣言すること自体を禁じているため。
+         app/src/github/AndroidManifest.xml を参照。 -->
 
     <application
         android:allowBackup="true"
@@ -44,12 +36,6 @@
                 <action android:name="android.telecom.CallRedirectionService" />
             </intent-filter>
         </service>
-
-        <!-- 発信後にCallLogのエントリを元番号へ戻すサービス -->
-        <service
-            android:name=".CallLogRewriteService"
-            android:exported="false"
-            android:foregroundServiceType="shortService" />
 
     </application>
 </manifest>

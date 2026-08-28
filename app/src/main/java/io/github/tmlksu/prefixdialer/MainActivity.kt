@@ -75,11 +75,9 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestMultiplePermissions(),
     ) { granted ->
         refreshSystemState()
-        val essential = listOf(
-            android.Manifest.permission.READ_CALL_LOG,
-            android.Manifest.permission.WRITE_CALL_LOG,
-        )
-        if (essential.all { granted[it] == true }) {
+        // 通知権限は無くても書き換え自体は動くので必須にしない。
+        // 判定は SystemStatus 側に寄せ、ここでは結果だけ見る。
+        if (status.callLogPermissionsGranted || granted.values.all { it }) {
             updateSettings { it.copy(callLogRewriteEnabled = true) }
         } else {
             toast(R.string.calllog_permission_denied)
@@ -203,7 +201,7 @@ class MainActivity : ComponentActivity() {
                             hasPhoneStatePermission = hasPhoneStatePermission,
                             onSettingsChange = { updated -> updateSettings { updated } },
                             onEnableCallLogRewrite = {
-                                callLogPermissionLauncher.launch(SystemStatus.callLogPermissions())
+                                callLogPermissionLauncher.launch(CallLogRewrite.PERMISSIONS)
                             },
                             onRequestBatteryExemption = ::openBatterySettings,
                             onRequestPhoneStatePermission = {

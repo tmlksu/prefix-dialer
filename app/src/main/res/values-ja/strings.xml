@@ -38,6 +38,7 @@
     <string name="nav_advanced_subtitle">通話履歴・SIM・ローミング・バックアップ</string>
 
     <!-- 番号種別 -->
+    <string name="nav_advanced_subtitle_no_calllog">SIM・ローミング・バックアップ</string>
     <string name="category_mobile">携帯電話</string>
     <string name="category_fixed_line">固定電話</string>
     <string name="category_voip">IP電話 (050)</string>

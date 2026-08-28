@@ -1,12 +1,10 @@
 package io.github.tmlksu.prefixdialer
 
-import android.Manifest
 import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings as AndroidSettings
 import androidx.core.content.ContextCompat
@@ -25,34 +23,23 @@ data class SystemStatus(
     /** 端末がこのロールに対応しているか（非対応端末では設定導線を出さない）。 */
     val roleAvailable: Boolean = true,
 
-    /** 通話履歴の読み書き権限があるか。履歴書き換え機能を有効にした場合のみ必要。 */
-    val hasCallLogPermissions: Boolean = false,
-
-    /** 連絡先の読み取り権限があるか。履歴の表示名を補完するために使う。 */
-    val hasContactsPermission: Boolean = false,
-
-    /** 通知権限があるか。履歴書き換えの短命フォアグラウンドサービスに必要。 */
-    val hasNotificationPermission: Boolean = false,
+    /**
+     * 履歴書き換えに必要な権限がすべて揃っているか。
+     *
+     * 個別の権限を持たないのは、この機能では常にまとめて要求・確認するため。
+     * 権限の一覧は [CallLogRewrite.PERMISSIONS]（フレーバーごとに異なる）が持つ。
+     */
+    val callLogPermissionsGranted: Boolean = false,
 
     /** バッテリー最適化から除外されているか。One UI で履歴書き換えが殺されるのを防ぐ。 */
     val ignoringBatteryOptimizations: Boolean = false,
 ) {
 
-    /** 履歴書き換え機能に必要な権限がすべて揃っているか。 */
+    /** 履歴書き換え機能が使える状態か。機能を持たない版では常に false。 */
     val readyForCallLogRewrite: Boolean
-        get() = hasCallLogPermissions && hasNotificationPermission
+        get() = CallLogRewrite.AVAILABLE && callLogPermissionsGranted
 
     companion object {
-
-        /** 履歴書き換え機能を有効にするときに要求する権限。 */
-        fun callLogPermissions(): Array<String> = buildList {
-            add(Manifest.permission.READ_CALL_LOG)
-            add(Manifest.permission.WRITE_CALL_LOG)
-            add(Manifest.permission.READ_CONTACTS)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                add(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }.toTypedArray()
 
         fun read(context: Context): SystemStatus {
             val roleManager = context.getSystemService(RoleManager::class.java)
@@ -61,17 +48,8 @@ data class SystemStatus(
             return SystemStatus(
                 hasRedirectionRole = roleManager?.isRoleHeld(RoleManager.ROLE_CALL_REDIRECTION) == true,
                 roleAvailable = roleManager?.isRoleAvailable(RoleManager.ROLE_CALL_REDIRECTION) == true,
-                hasCallLogPermissions = context.hasAll(
-                    Manifest.permission.READ_CALL_LOG,
-                    Manifest.permission.WRITE_CALL_LOG,
-                ),
-                hasContactsPermission = context.hasAll(Manifest.permission.READ_CONTACTS),
-                hasNotificationPermission =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        context.hasAll(Manifest.permission.POST_NOTIFICATIONS)
-                    } else {
-                        true
-                    },
+                callLogPermissionsGranted = CallLogRewrite.PERMISSIONS.isNotEmpty() &&
+                    context.hasAll(*CallLogRewrite.PERMISSIONS),
                 ignoringBatteryOptimizations =
                     powerManager?.isIgnoringBatteryOptimizations(context.packageName) == true,
             )

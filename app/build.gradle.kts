@@ -52,6 +52,29 @@ android {
         }
     }
 
+    /**
+     * 配布先ごとにフレーバーを分ける。
+     *
+     * Google Play は、既定の電話 / SMS / アシスタントアプリではないアプリが
+     * CALL_LOG 権限グループを**マニフェストに宣言すること自体**を禁じている。
+     * 例外が認められる用途の一覧にも「通話のリダイレクト」は存在せず、
+     * さらに例外の条件は「その権限がコア機能を実現していること」だが、
+     * 本アプリは履歴の書き換えを任意機能として設計している（＝コアではない）。
+     *
+     * よって Play 版からは権限・サービス・実装コードごと外す。
+     * 基本機能（プレフィックス付与）はこの権限を必要としないので成立する。
+     *
+     * - github: 全機能。GitHub Releases で直接配布する版
+     * - play  : 通話履歴の書き換えなし。宣言する権限は READ_PHONE_STATE のみ
+     *
+     * 両者は applicationId も署名鍵も同じなので、相互に上書き更新できる。
+     */
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("github") { dimension = "distribution" }
+        create("play") { dimension = "distribution" }
+    }
+
     buildFeatures {
         compose = true
     }

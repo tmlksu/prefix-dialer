@@ -45,6 +45,7 @@
     <string name="nav_advanced_subtitle">Call log, SIM, roaming, backup</string>
 
     <!-- Number categories -->
+    <string name="nav_advanced_subtitle_no_calllog">SIM, roaming, backup</string>
     <string name="category_mobile">Mobile</string>
     <string name="category_fixed_line">Landline</string>
     <string name="category_voip">VoIP (050)</string>

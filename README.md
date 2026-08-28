@@ -112,15 +112,34 @@ RuleSet(name = "G-Call", rules = listOf(
 2 と 7 がルールより上位にあるのが要点。プレフィックスやルールを UI から自由に編集できても、
 この 2 つはバイパスされない。
 
+## 配布版の違い（フレーバー）
+
+| | `github` | `play` |
+|---|---|---|
+| 配布先 | GitHub Releases | Google Play |
+| 通話履歴の書き換え | ✅ あり | ❌ なし |
+| 宣言する権限 | 下表すべて | `READ_PHONE_STATE` のみ |
+
+Google Play は、**既定の電話 / SMS / アシスタントアプリではないアプリが `CALL_LOG` 権限グループを
+マニフェストに宣言すること自体を禁じている**（実際に要求するかは関係ない）。例外が認められる用途の
+一覧にも「通話のリダイレクト」は無い。さらに例外の条件は「その権限がコア機能を実現していること」だが、
+本アプリは履歴の書き換えを任意機能として設計している（＝コアではない）。
+
+そこで Play 版からは**権限・サービス・実装コードごと外している**。APK を検査しても
+`CALL_LOG` 関連は権限名の文字列すら出てこない。CI で機械的に検証している。
+
+基本機能（プレフィックス付与）はこの権限を必要としないため、Play 版でも主目的はそのまま満たせる。
+違いは履歴にプレフィックス付きの番号が残る点だけ。
+
 ## 権限
 
 **基本機能（プレフィックス付与）は通話履歴の権限を一切必要としない。**
 
-| 権限 | いつ要求するか | 何に使うか |
-|---|---|---|
-| `ROLE_CALL_REDIRECTION` | 初回セットアップ | 発信直前の番号書き換え。端末に 1 アプリのみ |
-| `READ_PHONE_STATE` | 回線ごとの設定を開いたとき | 設定画面に回線名を表示する。**判定には使わない** |
-| `READ/WRITE_CALL_LOG` `READ_CONTACTS` `POST_NOTIFICATIONS` | 履歴書き換えを有効にしたとき | 発信後に履歴を元番号へ戻す |
+| 権限 | いつ要求するか | 何に使うか | フレーバー |
+|---|---|---|---|
+| `ROLE_CALL_REDIRECTION` | 初回セットアップ | 発信直前の番号書き換え。端末に 1 アプリのみ | 両方 |
+| `READ_PHONE_STATE` | 回線ごとの設定を開いたとき | 設定画面に回線名を表示する。**判定には使わない** | 両方 |
+| `READ/WRITE_CALL_LOG` `READ_CONTACTS` `POST_NOTIFICATIONS` | 履歴書き換えを有効にしたとき | 発信後に履歴を元番号へ戻す | `github` のみ |
 
 通話履歴の権限はインストール直後には要求しない。機能を有効化した瞬間に初めて求める。
 
@@ -130,10 +149,13 @@ Android Studio で `PrefixDialer/` を開くだけ。あるいは JDK 17 + Andro
 (platform-35 / build-tools 35.0.0) があれば同梱の Gradle Wrapper で CLI ビルドできる:
 
 ```
-./gradlew testDebugUnitTest   # ユニットテスト 116 件
-./gradlew assembleDebug       # APK -> app/build/outputs/apk/debug/
-./gradlew assembleRelease     # keystore.properties があれば署名される
+./gradlew test                       # ユニットテスト（両フレーバー）
+./gradlew assembleGithubRelease      # GitHub 配布用 APK（全機能）
+./gradlew bundlePlayRelease          # Play 提出用 AAB（通話履歴の書き換えなし）
 ```
+
+成果物は `app/build/outputs/{apk,bundle}/<フレーバー>/release/` に出る。
+`keystore.properties` があれば署名される（無ければ未署名。警告が出る）。
 
 SDK の場所は `local.properties`（`sdk.dir=...`、リポジトリには含めない）か環境変数
 `ANDROID_HOME` で指定する。
@@ -203,9 +225,17 @@ app/src/main/java/io/github/tmlksu/prefixdialer/
   PhoneAccounts.kt            回線一覧とローミング状態
   SystemStatus.kt             ロール・権限の状態
   PrefixRedirectionService.kt 発信直前に番号を書き換える
-  CallLogRewriteService.kt    発信後に履歴を元番号へ戻す（短命FGS・オプトイン）
   MainActivity.kt             設定画面のホスト
   ui/                         Compose の各画面
+
+app/src/github/                 GitHub 配布版だけに入るもの
+  AndroidManifest.xml           CALL_LOG 系の権限とサービスの宣言
+  .../CallLogRewrite.kt         履歴書き換えへの入り口（実装あり）
+  .../CallLogRewriteService.kt  発信後に履歴を元番号へ戻す（短命FGS）
+  .../PendingRewrites.kt        書き換え待ちの対応表
+
+app/src/play/                   Play 版だけに入るもの
+  .../CallLogRewrite.kt         同名の no-op 実装。権限も要求しない
 ```
 
 ## ライセンス

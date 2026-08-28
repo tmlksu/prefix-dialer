@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import io.github.tmlksu.prefixdialer.CallLogRewrite
 import io.github.tmlksu.prefixdialer.PhoneAccounts
 import io.github.tmlksu.prefixdialer.R
 import io.github.tmlksu.prefixdialer.Settings
@@ -56,8 +57,10 @@ fun AdvancedScreen(
         Spacer(Modifier.height(4.dp))
 
         // --- 通話履歴の書き換え ----------------------------------------------
+        // Play 版はこの機能を持たないので、セクションごと表示しない。
+        // 「あるのに使えない」状態を作らないため。
 
-        SectionCard(
+        if (CallLogRewrite.AVAILABLE) SectionCard(
             title = stringResource(R.string.calllog_title),
             description = stringResource(R.string.calllog_description),
         ) {

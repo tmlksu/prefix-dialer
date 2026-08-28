@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  github フレーバー専用のマニフェスト。
+
+  「通話履歴の書き換え」機能に必要な権限とサービスをここにだけ置く。
+
+  Google Play は、既定の電話 / SMS / アシスタントアプリではないアプリが
+  CALL_LOG 権限グループを**マニフェストに宣言すること自体**を禁じている
+  （実際に要求するかどうかに関わらず違反になる）。
+  例外が認められる用途の一覧にも「通話のリダイレクト」は存在しない。
+
+  そのため Play 版（play フレーバー）はこれらを一切持たない。
+  GitHub で直接配布する版だけがこの機能を含む。
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 通話履歴の読み書き（発信後に prefix を元番号へ戻すため） -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <!-- 履歴の表示名を連絡先から補完するため -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!-- 履歴書き換えを短命フォアグラウンドサービスで確実に走らせる -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SHORT_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application>
+        <!-- 発信後に CallLog のエントリを元番号へ戻すサービス -->
+        <service
+            android:name=".CallLogRewriteService"
+            android:exported="false"
+            android:foregroundServiceType="shortService" />
+    </application>
+</manifest>

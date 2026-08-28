@@ -28,18 +28,34 @@ jobs:
       # 緊急通報の保護に関する不変条件もここで守られる。
       # ProtectedNumbersTest が赤くなったら期待値ではなく実装を直すこと。
       - name: Unit tests
-        run: ./gradlew testDebugUnitTest
+        run: ./gradlew testGithubDebugUnitTest testPlayDebugUnitTest
 
       - name: Lint
-        run: ./gradlew lintDebug
+        run: ./gradlew lintGithubDebug lintPlayDebug
 
-      - name: Assemble debug APK
+      - name: Assemble debug APKs (both flavors)
         run: ./gradlew assembleDebug
 
       # release ビルドは R8 を通す。難読化で libphonenumber が壊れていないかを
       # ビルド段階で検出する（実機での動作確認は別途必要）。
-      - name: Assemble release APK (unsigned)
+      - name: Assemble release APKs (unsigned)
         run: ./gradlew assembleRelease
+
+      # Play 版が CALL_LOG 権限を宣言していないことを機械的に検証する。
+      # Play は既定の電話アプリでないアプリがこれを宣言すること自体を禁じており、
+      # うっかり main の manifest に戻すと審査に落ちる。人間の注意力に頼らない。
+      - name: Verify the Play flavor declares no call log permissions
+        run: |
+          AAPT=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
+          APK=$(ls app/build/outputs/apk/play/release/*.apk | head -1)
+          echo "checking $APK"
+          PERMS=$("$AAPT" dump permissions "$APK")
+          echo "$PERMS"
+          if echo "$PERMS" | grep -qE "CALL_LOG|READ_CONTACTS"; then
+            echo "::error::play フレーバーが CALL_LOG / READ_CONTACTS を宣言しています"
+            exit 1
+          fi
+          echo "OK: no call log permissions in the play flavor"
 
       - name: Upload test report
         if: always()
@@ -53,5 +69,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/*/debug/*.apk
           retention-days: 14

@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import io.github.tmlksu.prefixdialer.CallLogRewrite
 import io.github.tmlksu.prefixdialer.DialRule
 import io.github.tmlksu.prefixdialer.NumberCategory
 import io.github.tmlksu.prefixdialer.R
@@ -163,7 +164,10 @@ fun HomeScreen(
                 HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                 NavigationRow(
                     title = stringResource(R.string.screen_advanced),
-                    subtitle = stringResource(R.string.nav_advanced_subtitle),
+                    subtitle = stringResource(
+                        if (CallLogRewrite.AVAILABLE) R.string.nav_advanced_subtitle
+                        else R.string.nav_advanced_subtitle_no_calllog,
+                    ),
                     onClick = onOpenAdvanced,
                 )
             }

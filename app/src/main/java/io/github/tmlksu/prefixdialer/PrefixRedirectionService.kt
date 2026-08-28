@@ -1,11 +1,9 @@
 package io.github.tmlksu.prefixdialer
 
-import android.content.Intent
 import android.net.Uri
 import android.telecom.CallRedirectionService
 import android.telecom.PhoneAccountHandle
 import android.util.Log
-import androidx.core.content.ContextCompat
 
 /**
  * 発信直前に呼ばれ、設定に従って番号を書き換えてから発信し直す。
@@ -68,16 +66,11 @@ class PrefixRedirectionService : CallRedirectionService() {
 
         Log.d(TAG, "redirect: $original -> $dial")
 
-        // 履歴の書き換えはオプトイン。無効なら監視サービスも起動しない
+        // 履歴の書き換えはオプトイン。無効なら何もしない
         // （通話履歴の権限を持っていない可能性があるため）。
+        // Play 版では CallLogRewrite が no-op 実装になっている。
         if (settings.callLogRewriteEnabled) {
-            PendingRewrites.add(dial, original, System.currentTimeMillis())
-            runCatching {
-                ContextCompat.startForegroundService(
-                    this,
-                    Intent(this, CallLogRewriteService::class.java),
-                )
-            }.onFailure { Log.w(TAG, "could not start rewrite service", it) }
+            CallLogRewrite.onCallRedirected(this, dial, original)
         }
 
         redirectCall(Uri.fromParts("tel", dial, null), initialPhoneAccount, false)
