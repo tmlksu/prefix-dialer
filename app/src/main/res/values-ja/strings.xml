@@ -91,6 +91,8 @@
     <string name="calllog_note_battery_action">バッテリー設定を開く</string>
     <string name="calllog_note_off">この機能を使わない場合、通話履歴の権限は一切要求されません。履歴にはプレフィックス付きの番号が残ります。</string>
     <string name="calllog_permission_denied">通話履歴の権限が無いため、履歴の書き換えは有効にできません</string>
+    <!-- play フレーバーで、上のセクションの代わりに出す -->
+    <string name="calllog_unavailable">この版には通話履歴の書き換え機能はありません（Google Play のポリシーにより、通話履歴の権限を宣言できないため）。</string>
 
     <!-- 詳細設定: ローミング -->
     <string name="roaming_title">ローミング</string>
@@ -117,6 +119,12 @@
     <string name="backup_read_failed">ファイルを読めませんでした</string>
     <string name="backup_imported">設定を読み込みました</string>
     <string name="backup_invalid">設定の形式が正しくありません</string>
+
+    <!-- 詳細設定: このアプリについて -->
+    <string name="about_title">このアプリについて</string>
+    <string name="about_version">バージョン %1$s</string>
+    <string name="about_privacy_policy">プライバシーポリシー</string>
+    <string name="about_source_code">ソースコード</string>
 
     <!-- 書き換えなかった理由 -->
     <string name="skip_protected_number">緊急通報・特番のため（設定に関わらず保護されます）</string>

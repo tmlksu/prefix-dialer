@@ -98,6 +98,8 @@
     <string name="calllog_note_battery_action">Open battery settings</string>
     <string name="calllog_note_off">If you leave this off, no call log permission is ever requested. The prefix will remain visible in your call history.</string>
     <string name="calllog_permission_denied">Call log rewriting cannot be enabled without call log permissions</string>
+    <!-- Shown by the play flavour in place of the section above -->
+    <string name="calllog_unavailable">This build does not include call log rewriting, because Google Play does not allow apps that are not the default phone app to declare call log permissions.</string>
 
     <!-- Advanced: roaming -->
     <string name="roaming_title">Roaming</string>
@@ -124,6 +126,12 @@
     <string name="backup_read_failed">Could not read the file</string>
     <string name="backup_imported">Settings imported</string>
     <string name="backup_invalid">The settings file is not valid</string>
+
+    <!-- Advanced: about this app -->
+    <string name="about_title">About this app</string>
+    <string name="about_version">Version %1$s</string>
+    <string name="about_privacy_policy">Privacy policy</string>
+    <string name="about_source_code">Source code</string>
 
     <!-- Skip reasons -->
     <string name="skip_protected_number">Emergency or service number (always protected)</string>

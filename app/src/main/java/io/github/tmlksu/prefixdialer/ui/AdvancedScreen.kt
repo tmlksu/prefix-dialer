@@ -1,5 +1,7 @@
 package io.github.tmlksu.prefixdialer.ui
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,8 +22,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import io.github.tmlksu.prefixdialer.AppLinks
+import io.github.tmlksu.prefixdialer.BuildConfig
 import io.github.tmlksu.prefixdialer.CallLogRewrite
 import io.github.tmlksu.prefixdialer.PhoneAccounts
 import io.github.tmlksu.prefixdialer.R
@@ -48,6 +54,22 @@ fun AdvancedScreen(
     onImport: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+
+    /**
+     * リンクをブラウザで開く。INTERNET 権限は要らない（開くのは別アプリ）。
+     *
+     * ブラウザを持たない端末では何も起きない。ここで落としたり警告を出したりする
+     * ほどのことではないので、例外だけ握る。
+     */
+    fun openLink(url: String) {
+        try {
+            context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+        } catch (_: ActivityNotFoundException) {
+            // 開けるアプリが無い。何もしない。
+        }
+    }
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -57,8 +79,16 @@ fun AdvancedScreen(
         Spacer(Modifier.height(4.dp))
 
         // --- 通話履歴の書き換え ----------------------------------------------
-        // Play 版はこの機能を持たないので、セクションごと表示しない。
+        // Play 版はこの機能を持たないので、操作できる項目は出さない。
         // 「あるのに使えない」状態を作らないため。
+        //
+        // ただし黙って消すと、github 版から移った人には「設定が消えた」としか
+        // 見えない。無いことと、その理由だけを置く（PLAY-RELEASE.md §9）。
+
+        if (!CallLogRewrite.AVAILABLE) SectionCard(
+            title = stringResource(R.string.calllog_title),
+            description = stringResource(R.string.calllog_unavailable),
+        ) {}
 
         if (CallLogRewrite.AVAILABLE) SectionCard(
             title = stringResource(R.string.calllog_title),
@@ -194,6 +224,27 @@ fun AdvancedScreen(
                 OutlinedButton(onClick = onExport) { Text(stringResource(R.string.backup_export)) }
                 OutlinedButton(onClick = onImport) { Text(stringResource(R.string.backup_import)) }
             }
+        }
+
+        // --- このアプリについて ----------------------------------------------
+        // プライバシーポリシーへの導線は Google Play の明文要件で、Console の
+        // フィールドと**アプリ内**の両方に要る（PLAY-RELEASE.md §5）。
+
+        SectionCard(
+            title = stringResource(R.string.about_title),
+            description = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
+        ) {
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.about_privacy_policy)) },
+                supportingContent = { Text(AppLinks.PRIVACY_POLICY) },
+                modifier = Modifier.clickableRow { openLink(AppLinks.PRIVACY_POLICY) },
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.about_source_code)) },
+                supportingContent = { Text(AppLinks.SOURCE_CODE) },
+                modifier = Modifier.clickableRow { openLink(AppLinks.SOURCE_CODE) },
+            )
         }
 
         Spacer(Modifier.height(24.dp))

@@ -77,6 +77,9 @@ android {
 
     buildFeatures {
         compose = true
+        // 「このアプリについて」でバージョン名を出すために BuildConfig が要る。
+        // AGP 8.0 以降は既定で生成されない。
+        buildConfig = true
     }
     composeOptions {
         // Kotlin 1.9.24 に対応する Compose Compiler。Kotlin を上げるときは
