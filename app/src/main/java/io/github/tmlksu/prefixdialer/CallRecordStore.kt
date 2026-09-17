@@ -67,7 +67,7 @@ class CallRecordStore(context: Context) {
     }
 
     companion object {
-        private const val PREFS_NAME = "prefix_dialer_call_records"
+        internal const val PREFS_NAME = "prefix_dialer_call_records"
         private const val KEY_RECORDS = "records_json"
     }
 }

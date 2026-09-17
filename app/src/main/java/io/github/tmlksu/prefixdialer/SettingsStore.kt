@@ -115,7 +115,7 @@ class SettingsStore(context: Context) {
 
     companion object {
         private const val TAG = "SettingsStore"
-        private const val PREFS_NAME = "prefix_dialer_settings"
+        internal const val PREFS_NAME = "prefix_dialer_settings"
         private const val KEY_SETTINGS = "settings_json"
     }
 }

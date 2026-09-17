@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 10〜11（API 29–30）用バックアップ除外設定。API 31+ 用は data_extraction_rules.xml を参照。
+
+  なぜ発信記録だけ除外するか:
+  - PRIVACY.md は「発信した電話番号そのものである発信記録は端末内にのみ保存する」と約束しているため、
+    Android 自動バックアップ（ユーザーの Google ドライブ）へ発信記録を送らない。
+  - 設定（ルール・プレフィックスなど）は機種変で引き継ぐ価値があるため、バックアップ対象に残す。
+  - 除外番号（実在しうる電話番号）が設定側に含まれることは承知の上。設定を引き継ぐ利便を優先し、
+    その旨は PRIVACY.md に明記している。
+
+  sharedpref ドメインの path はファイル名（`.xml` 付き）で指定する。
+  https://developer.android.com/identity/data/autobackup 「Include and exclude files」参照。
+-->
+<full-backup-content>
+    <exclude domain="sharedpref" path="prefix_dialer_call_records.xml" />
+</full-backup-content>

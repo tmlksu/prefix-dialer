@@ -327,6 +327,7 @@ Release `v1.0.0` に `prefix-dialer-1.0.0.apk` を添付済み。
 | — | テスト | 実発信を伴うテストは書かない。純 JVM のユニットテストで網羅 |
 | — | JSON | 依存を増やさず手書きのシリアライザ（`org.json` はユニットテストでスタブ化されるため不可） |
 | D-18 | 回線の識別 | `PhoneAccountHandle.id` を鍵にする。`onPlaceCall` が渡す値そのものなので判定経路に権限が不要。`READ_PHONE_STATE` は設定画面で回線名を表示するときだけ要求する |
+| P-01 | 自動バックアップ | allowBackup は維持し、発信記録の prefs だけ除外（fullBackupContent + dataExtractionRules）。設定は機種変で引き継ぐ。BackupRulesTest で固定 |
 | — | 既定ロケール | 既定を英語、`values-ja` を日本語。日本以外のロケールでは日本語ではなく英語にフォールバックさせる |
 | — | プリセット名 | 永続化される `RuleSet.name` はロケール非依存の固定文字列。表示名は UI 層が解決する |
 | — | R8 | release で有効。libphonenumber と Service に keep ルール。**実機動作は H-05 で要確認** |

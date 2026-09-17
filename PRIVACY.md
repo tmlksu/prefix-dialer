@@ -2,7 +2,7 @@
 
 **Prefix Dialer**
 
-最終更新: 2026-08-26
+最終更新: 2026-09-18
 
 日本語版が原文です。An English translation follows the Japanese text.
 
@@ -17,7 +17,10 @@
 このアプリは**インターネット権限（`android.permission.INTERNET`）を持っていません**。
 これは方針ではなく技術的な制約です。Android は宣言されていない権限の使用を許さないため、
 このアプリはネットワークに接続すること自体ができません。したがって、あなたの電話番号・
-通話履歴・連絡先が端末の外へ出ることはありません。
+通話履歴・連絡先をアプリ自身が端末の外へ送ることはありません。
+ただし、あなたの設定は Android の自動バックアップ（Android OS があなたの Google アカウントへ行う
+バックアップ / 機種変更時の転送）の対象になります。これは OS の機能であり、アプリ自身が送信する
+ものではありません。発信記録は自動バックアップの対象外です。
 
 この事実は、配布している APK を検査すれば誰でも確認できます:
 
@@ -34,7 +37,9 @@ aapt2 dump permissions app-release.apk
 
 ### アプリが端末内で扱う情報
 
-以下はすべて**あなたの端末の中だけ**で処理され、端末外へ送信されることはありません。
+以下はすべて**あなたの端末の中だけ**で処理され、アプリ自身が端末外へ送信することはありません。
+ただし、あなたの設定は Android の自動バックアップ（Google アカウントへのバックアップ /
+機種変更時の転送）の対象になります。これは Android OS が行うもので、発信記録は対象外です。
 
 | 情報 | 用途 | 保存されるか |
 |---|---|---|
@@ -42,7 +47,7 @@ aapt2 dump permissions app-release.apk
 | 通話履歴 | 発信後に番号を元に戻す（**任意機能。既定では無効**） | 保存しない。書き換え後は参照しない |
 | 連絡先の表示名 | 書き換えた通話履歴に名前を補完する（**任意機能**） | 保存しない |
 | 回線（SIM）の名前 | 設定画面で回線ごとの ON/OFF を表示する | 保存しない |
-| あなたの設定 | ルール・除外番号などの保持 | 端末内に保存される |
+| あなたの設定 | ルール・除外番号などの保持 | 端末内に保存される。Android の自動バックアップ（Google アカウントへのバックアップ / 機種変更時の転送）の対象。発信記録は対象外 |
 | 発信記録 | 各発信で何をしたかをあなたが確認するため | 端末内に既定 100 件まで保存される |
 
 ### 発信記録について
@@ -51,6 +56,7 @@ aapt2 dump permissions app-release.apk
 これは**アプリ自身の動作記録**であり、Android の通話履歴とは別物です。
 
 - 端末内にのみ保存されます
+- Android の自動バックアップ（Google アカウントへのバックアップ / 機種変更時の転送）からは除外しているため、バックアップや機種変更時の転送には含まれません
 - 既定で直近 100 件まで、古いものから消えます
 - アプリ内の「記録を消去」でいつでも全削除できます
 
@@ -111,7 +117,10 @@ GitHub リポジトリの Issues からご連絡ください。
 The app does **not hold the internet permission** (`android.permission.INTERNET`).
 This is a technical constraint rather than a policy promise: Android does not permit an app
 to use a permission it has not declared, so this app is incapable of connecting to a network.
-Your phone numbers, call log and contacts therefore cannot leave your device.
+Your phone numbers, call log and contacts therefore cannot be sent off your device by the app itself.
+The only exception is your settings, which are subject to Android Auto Backup (performed by
+Android OS to your Google account, including device-to-device transfer when you change phones).
+This is done by the OS, not by the app. Call records are excluded from Auto Backup.
 
 Anyone can verify this by inspecting the distributed APK:
 
@@ -128,7 +137,9 @@ There is no analytics, no crash reporting, no advertising and no tracking.
 
 ### What the app handles on your device
 
-All of the following is processed **only on your device** and is never transmitted.
+All of the following is processed **only on your device** and is never transmitted by the app itself.
+The only exception is your settings, which are subject to Android Auto Backup (backup to your
+Google account / transfer when changing devices, performed by Android OS). Call records are excluded.
 
 | Data | Purpose | Stored? |
 |---|---|---|
@@ -136,7 +147,7 @@ All of the following is processed **only on your device** and is never transmitt
 | Call log | Restoring the original number after a call (**optional, off by default**) | Not stored |
 | Contact display names | Filling in the name on a rewritten call log entry (**optional**) | Not stored |
 | SIM line names | Showing per-line switches in settings | Not stored |
-| Your settings | Rules, exclusions and so on | Stored on device |
+| Your settings | Rules, exclusions and so on | Stored on device. Subject to Android Auto Backup (backup to your Google account / transfer when changing devices). Call records are excluded |
 | Call records | So you can check what the app did on each call | Stored on device, 100 entries by default |
 
 ### Call records
@@ -146,6 +157,8 @@ reason when no prefix was added. This is **the app's own activity log**, distinc
 Android's call history.
 
 - Stored only on your device
+- Excluded from Android Auto Backup (backup to your Google account / transfer when changing
+  devices), so call records are not included in backups or device transfers
 - Limited to the 100 most recent entries by default; older entries are dropped
 - Can be erased at any time from within the app
 
