@@ -36,8 +36,10 @@ android {
         applicationId = "io.github.tmlksu.prefixdialer"
         minSdk = 29          // Android 10: CallRedirectionService が使える最低ライン
         targetSdk = 36       // Android 16。Play は 2026-08-31 以降の新規提出に必須
-        versionCode = 1
-        versionName = "1.0.0"
+        // 両フレーバーで単一の連番を共有し、絶対に再利用しない（PLAY-RELEASE.md §8）。
+        // 1 は GitHub Releases の 1.0.0 で配布済み。
+        versionCode = 2
+        versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

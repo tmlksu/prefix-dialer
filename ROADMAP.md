@@ -17,7 +17,15 @@ https://github.com/tmlksu/prefix-dialer/releases/tag/v1.0.0
 - ✅ ローミング中の自動停止、回線ごとの ON/OFF、個別除外リスト
 - ✅ 発信記録（書き換えなかった理由つき）
 - ✅ アイコン、多言語（en / ja）、applicationId、署名設定、R8、CI
-- ✅ ユニットテスト 113 件（実発信を伴うテストは無し）
+- ✅ ユニットテスト 118 件（実発信を伴うテストは無し）
+
+**1.1.0（未リリース）で Play 提出の前提を揃えた。** 変更点は [CHANGELOG.md](CHANGELOG.md)。
+
+- ✅ targetSdk / compileSdk 36（AGP 8.9.3 / Gradle 8.11.1）
+- ✅ 発信記録を Android の自動バックアップから除外
+- ✅ アプリ内のプライバシーポリシー導線（Play の明文要件）
+- ✅ `versionCode = 2` / `versionName = "1.1.0"`
+- ⬜ targetSdk 36 のビルドでの実発信確認（DECISIONS.md H-08。**作者にしかできない**）
 
 ## 残っていること
 
@@ -38,7 +46,7 @@ https://github.com/tmlksu/prefix-dialer/releases/tag/v1.0.0
 - [x] プライバシーポリシーの本文と公開先 URL（D-03）
 - [x] applicationId の確定（D-10）— `io.github.tmlksu.prefixdialer`
 - [x] GitHub Releases での配布
-- [ ] Play への提出（D-03 / D-20）— 要件と手順は [PLAY-RELEASE.md](PLAY-RELEASE.md)、掲載文の草案は [PLAY-LISTING.md](PLAY-LISTING.md)。**targetSdk 36 への引き上げが先決**（2026-08-31 から新規アプリは API 36 必須）
+- [ ] Play への提出（D-03 / D-20）— 要件と手順は [PLAY-RELEASE.md](PLAY-RELEASE.md)、掲載文の草案は [PLAY-LISTING.md](PLAY-LISTING.md)。コード側の前提（targetSdk 36 / アプリ内のポリシー導線 / `versionCode = 2`）は 1.1.0 で揃った。残りは Console 側の作業
 
 ### プリセットの拡充
 
