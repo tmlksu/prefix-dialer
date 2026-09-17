@@ -3,7 +3,7 @@
 発信時に、国内の携帯・固定電話番号へ自動で事業者プレフィックス（例: `0063`）を付ける Android アプリ。
 標準の電話アプリを置き換えず、`CallRedirectionService`（Android 10+）で発信直前に番号を書き換える。
 
-対象端末: Samsung Galaxy S25 / One UI 7（Android 15）で確認。minSdk 29 / targetSdk 35。
+対象端末: Samsung Galaxy S25 / One UI 7（Android 15）で確認。minSdk 29 / targetSdk 36。
 
 配布サイト: <https://tmlksu.github.io/prefix-dialer/>（ソースは `docs/`。Pages 有効化の手順は
 [docs/README.md](docs/README.md) を参照）
@@ -149,7 +149,7 @@ Google Play は、**既定の電話 / SMS / アシスタントアプリではな
 ## ビルド
 
 Android Studio で `PrefixDialer/` を開くだけ。あるいは JDK 17 + Android SDK
-(platform-35 / build-tools 35.0.0) があれば同梱の Gradle Wrapper で CLI ビルドできる:
+(platform-36 / build-tools 35.0.0) があれば同梱の Gradle Wrapper で CLI ビルドできる:
 
 ```
 ./gradlew test                       # ユニットテスト（両フレーバー）

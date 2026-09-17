@@ -30,12 +30,12 @@ val hasSigningConfig = listOf("storeFile", "storePassword", "keyAlias", "keyPass
 
 android {
     namespace = "io.github.tmlksu.prefixdialer"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.github.tmlksu.prefixdialer"
         minSdk = 29          // Android 10: CallRedirectionService が使える最低ライン
-        targetSdk = 35       // Android 15 (S25 / One UI 7)
+        targetSdk = 36       // Android 16。Play は 2026-08-31 以降の新規提出に必須
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
