@@ -336,12 +336,34 @@ Release `v1.0.0` に `prefix-dialer-1.0.0.apk` を添付済み。
 - [ ] **edge-to-edge が強制になったことで、画面の末尾がナビゲーションバーに
       潜っていない**（targetSdk 36 の挙動変更。オプトアウトはもう効かない）
 - [ ] 戻る操作で設定画面からホームに戻る（予測バックへの移行の確認）
+- [x] Rakuten Hand（Android 11）に play 版 1.1.0 をインストールし、起動・ロール付与・
+      設定画面・「このアプリについて」のリンクを確認（2026-09-18、agent が adb で確認）
 
-**2026-09-18: agent 側での adb 確認はできなかった。** `adb devices` に見えたのは
-Rakuten P780 と Echo Show 5 が 2 台（いずれも Android 11 / SDK 30）で、Galaxy S25 が
-いなかった。作者の端末以外には触らない方針なので、インストールもスクリーンショットも
-行っていない。S25 を Wi-Fi で繋ぎ直したら、この確認と `store/screenshots/` の撮影を
-まとめて依頼してください。
+**上のチェック済み項目は S25 の代わりにはならない。** Rakuten Hand は Android 11（SDK 30）で、
+`targetSdk 36` を宣言していても**端末側が 36 の挙動変更を実装していない**。
+edge-to-edge の強制も予測バックも、この端末では再現しない。**S25 での確認は未了のまま。**
+
+**2026-09-18 に Rakuten Hand（`a16282bf` / P780 / Android 11 / 720×1520）で確認できたこと:**
+
+- `adb install -r` が成功。play 版なので通話履歴の権限は要求されない
+  （requested permissions は `READ_PHONE_STATE` と内部権限の 2 つだけ）
+- `versionCode=2` / `versionName=1.1.0` / `targetSdk=36` を `dumpsys package` で実測
+- 一連の画面操作で `AndroidRuntime:E` のクラッシュはゼロ
+- 通話リダイレクトのロール付与ダイアログが出て、許可すると警告カードが消える
+- 「このアプリについて」→「プライバシーポリシー」のタップで Chrome が起動する
+  （`ACTION_VIEW` の導線が実際に動くこと自体は確認できた）
+- ストア用スクリーンショット 6 枚を撮影 → `store/screenshots/`
+
+**あわせて見つかった要対応:** リンク先の
+`https://tmlksu.github.io/prefix-dialer/privacy.html` は **404**（ホストからの `curl` でも 404）。
+Pages が未有効なのではなく、**`docs/` を含むコミットがまだ push されていない**
+（`origin/main` が `6873bab` 止まり）。push と Settings → Pages の有効化は作者の作業で、
+これが済むまでアプリ内リンクも Play Console に登録する URL も 404 のまま。
+
+**端末に残した状態:** play 版 1.1.0 がインストールされたまま、`ROLE_CALL_REDIRECTION` を
+保持したまま、プリセット G-Call（`0063`）でマスタースイッチ ON。
+**この端末に SIM を入れて発信すると `0063` が付く。** 予備機として SIM を入れる予定があるなら、
+先にアンインストールするかマスタースイッチを OFF にしてください。
 
 ---
 
