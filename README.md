@@ -5,6 +5,9 @@
 
 対象端末: Samsung Galaxy S25 / One UI 7（Android 15）で確認。minSdk 29 / targetSdk 35。
 
+配布サイト: <https://tmlksu.github.io/prefix-dialer/>（ソースは `docs/`。Pages 有効化の手順は
+[docs/README.md](docs/README.md) を参照）
+
 ## ダウンロード
 
 [Releases](https://github.com/tmlksu/prefix-dialer/releases/latest) から APK を取得してください。

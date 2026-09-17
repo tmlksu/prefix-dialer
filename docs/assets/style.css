@@ -1,0 +1,208 @@
+/* Prefix Dialer — 配布サイト共通スタイル。ビルド不要の素の CSS。 */
+
+:root {
+  --brand: #1B5E5A;
+  --brand-ink: #0f3a37;
+  --accent: #2f9e94;
+  --bg: #f7f9f8;
+  --surface: #ffffff;
+  --text: #16211f;
+  --muted: #5a6a68;
+  --line: #dde5e3;
+  --warn-bg: #fff6e8;
+  --warn-line: #e8c890;
+  --radius: 14px;
+  --maxw: 880px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand: #4ec4b6;
+    --brand-ink: #9fe7dc;
+    --accent: #4ec4b6;
+    --bg: #101615;
+    --surface: #182220;
+    --text: #e7efed;
+    --muted: #a3b3b0;
+    --line: #2a3835;
+    --warn-bg: #2a2416;
+    --warn-line: #6b5730;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+/* 言語切り替え。JS が無い場合は両言語が並んで表示される（欠落しない）。 */
+html.lang-ja [lang="en"] { display: none; }
+html.lang-en [lang="ja"] { display: none; }
+
+a { color: var(--brand); }
+a:hover { color: var(--accent); }
+
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+
+/* ---- ヘッダー ---- */
+.site-header {
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  flex-wrap: wrap;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text);
+  margin-right: auto;
+}
+.brand img { width: 30px; height: 30px; border-radius: 7px; display: block; }
+.site-nav { display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; }
+.site-nav a { text-decoration: none; color: var(--muted); }
+.site-nav a:hover { color: var(--brand); }
+
+.lang-switch { display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.lang-switch button {
+  font: inherit;
+  font-size: 13px;
+  padding: 3px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.lang-switch button[aria-pressed="true"] { background: var(--brand); color: #fff; }
+@media (prefers-color-scheme: dark) {
+  .lang-switch button[aria-pressed="true"] { color: #101615; }
+}
+
+/* ---- ヒーロー ---- */
+.hero { padding: 56px 0 40px; text-align: center; }
+.hero img.appicon { width: 88px; height: 88px; border-radius: 20px; display: block; margin: 0 auto 18px; }
+.hero h1 { font-size: 2.1rem; margin: 0 0 6px; letter-spacing: -0.01em; }
+.hero .tagline { font-size: 1.1rem; margin: 0 auto 8px; max-width: 34em; }
+.hero .sub { color: var(--muted); font-size: 0.95rem; margin: 0 auto; max-width: 36em; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 22px 0 0; padding: 0; list-style: none; }
+.chips li {
+  font-size: 13px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 12px;
+  background: var(--surface);
+}
+
+.cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 26px; }
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--brand);
+  color: var(--brand);
+  background: var(--surface);
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-primary:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) {
+  .btn-primary { color: #101615; }
+  .btn-primary:hover { color: #101615; }
+}
+
+/* ---- セクション ---- */
+section { padding: 34px 0; border-top: 1px solid var(--line); }
+section:first-of-type { border-top: 0; }
+h2 { font-size: 1.35rem; margin: 0 0 14px; letter-spacing: -0.01em; }
+h3 { font-size: 1.05rem; margin: 22px 0 6px; }
+p { margin: 0 0 14px; }
+
+.cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); padding: 0; list-style: none; margin: 0; }
+.cards li {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.cards b { display: block; margin-bottom: 4px; }
+.cards span { color: var(--muted); font-size: 14px; }
+
+.note {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.note.warn { border-left-color: var(--warn-line); background: var(--warn-bg); }
+.note p:last-child { margin-bottom: 0; }
+
+ul.plain { padding-left: 1.2em; margin: 0 0 14px; }
+ul.plain li { margin-bottom: 6px; }
+
+table { border-collapse: collapse; width: 100%; font-size: 14px; background: var(--surface); }
+th, td { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; }
+th { background: rgba(127, 127, 127, 0.08); font-weight: 600; }
+.table-scroll { overflow-x: auto; margin-bottom: 14px; }
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: rgba(127, 127, 127, 0.14);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+pre {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+pre code { background: none; padding: 0; }
+
+/* ---- フッター ---- */
+.site-footer {
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  padding: 26px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.site-footer ul { display: flex; flex-wrap: wrap; gap: 16px; list-style: none; padding: 0; margin: 0 0 10px; }
+.site-footer p { margin: 0; }
+
+/* ---- プライバシーポリシー本文 ---- */
+.policy { max-width: var(--maxw); }
+.policy h2 { margin-top: 34px; padding-top: 14px; border-top: 1px solid var(--line); }
+.policy h2:first-of-type { border-top: 0; padding-top: 0; }
+.updated { color: var(--muted); font-size: 14px; }
+
+@media (max-width: 560px) {
+  .hero { padding: 40px 0 30px; }
+  .hero h1 { font-size: 1.7rem; }
+  .site-nav { font-size: 13px; gap: 12px; }
+}

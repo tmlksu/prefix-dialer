@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja" class="lang-ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prefix Dialer — 発信時に事業者プレフィックスを自動で付ける Android アプリ</title>
+<meta name="description" content="発信するだけで、国内の携帯・固定電話への通話に事業者プレフィックスを自動で付ける Android アプリ。インターネット権限を持たず、情報を一切送信しません。">
+<meta name="theme-color" content="#1B5E5A">
+<link rel="canonical" href="https://tmlksu.github.io/prefix-dialer/">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Prefix Dialer">
+<meta property="og:description" content="発信時に事業者プレフィックスを自動で付ける Android アプリ。情報を一切収集・送信しません。">
+<meta property="og:url" content="https://tmlksu.github.io/prefix-dialer/">
+<script src="assets/lang.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="assets/icon.svg" alt=""> Prefix Dialer</a>
+    <nav class="site-nav">
+      <a href="#features"><span lang="ja">機能</span><span lang="en">Features</span></a>
+      <a href="#safety"><span lang="ja">安全性</span><span lang="en">Safety</span></a>
+      <a href="#privacy"><span lang="ja">プライバシー</span><span lang="en">Privacy</span></a>
+      <a href="#download"><span lang="ja">入手</span><span lang="en">Get it</span></a>
+      <a href="#support"><span lang="ja">サポート</span><span lang="en">Support</span></a>
+    </nav>
+    <div class="lang-switch">
+      <button type="button" data-lang="ja" aria-pressed="true">日本語</button>
+      <button type="button" data-lang="en" aria-pressed="false">English</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<div class="hero wrap">
+  <img class="appicon" src="assets/icon.svg" alt="Prefix Dialer">
+  <h1>Prefix Dialer</h1>
+  <p class="tagline">
+    <span lang="ja">発信するだけで、国内の携帯・固定電話への通話に事業者プレフィックスを自動で付けます。</span>
+    <span lang="en">Automatically adds your carrier prefix when you call Japanese mobile and landline numbers.</span>
+  </p>
+  <p class="sub">
+    <span lang="ja">標準の電話アプリはそのまま使えます。緊急通報・特番は、設定に関わらず決して書き換えません。</span>
+    <span lang="en">Keep using your normal phone app. Emergency and service numbers are never rewritten, whatever the settings.</span>
+  </p>
+  <ul class="chips">
+    <li><span lang="ja">Android 10 以上</span><span lang="en">Android 10+</span></li>
+    <li><span lang="ja">インターネット権限なし</span><span lang="en">No internet permission</span></li>
+    <li><span lang="ja">広告・課金なし</span><span lang="en">No ads, no purchases</span></li>
+    <li><span lang="ja">日本語 / English</span><span lang="en">Japanese / English</span></li>
+    <li><span lang="ja">オープンソース (MIT)</span><span lang="en">Open source (MIT)</span></li>
+  </ul>
+  <div class="cta">
+    <!--
+      Play 公開後にこのコメントを外してボタンを有効にする（公開前は 404 になるため伏せている）。
+      公式バッジ画像を使う場合は https://play.google.com/intl/en_us/badges/ から
+      画像を取得して assets/ に置き、ブランドガイドラインに従うこと。
+    <a class="btn btn-primary" href="https://play.google.com/store/apps/details?id=io.github.tmlksu.prefixdialer">
+      <span lang="ja">Google Play で入手</span><span lang="en">Get it on Google Play</span>
+    </a>
+    -->
+    <a class="btn btn-primary" href="https://github.com/tmlksu/prefix-dialer/releases/latest">
+      <span lang="ja">APK をダウンロード</span><span lang="en">Download the APK</span>
+    </a>
+    <a class="btn" href="https://github.com/tmlksu/prefix-dialer">
+      <span lang="ja">ソースコード</span><span lang="en">Source code</span>
+    </a>
+    <a class="btn" href="privacy.html">
+      <span lang="ja">プライバシーポリシー</span><span lang="en">Privacy policy</span>
+    </a>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <h2><span lang="ja">できること</span><span lang="en">Features</span></h2>
+    <ul class="cards">
+      <li>
+        <b><span lang="ja">番号種別ごとのルール</span><span lang="en">Per-type rules</span></b>
+        <span lang="ja">携帯 / 固定 / IP電話（050）ごとにプレフィックスと先頭 <code>0</code> の扱いを設定できます。</span>
+        <span lang="en">Set the prefix and the handling of the leading <code>0</code> separately for mobile, landline and VoIP (050) numbers.</span>
+      </li>
+      <li>
+        <b><span lang="ja">事業者プリセット</span><span lang="en">Carrier presets</span></b>
+        <span lang="ja">G-Call / 楽天でんわ。公開資料で動作を確認できたものだけを収録しています。</span>
+        <span lang="en">G-Call and Rakuten Denwa — only carriers whose behaviour was verified from public sources.</span>
+      </li>
+      <li>
+        <b><span lang="ja">細かい ON/OFF</span><span lang="en">Fine-grained switches</span></b>
+        <span lang="ja">マスタースイッチ、回線（SIM）ごとの ON/OFF、ローミング中の自動停止。</span>
+        <span lang="en">Master switch, per-SIM-line on/off, and automatic pause while roaming.</span>
+      </li>
+      <li>
+        <b><span lang="ja">除外リスト</span><span lang="en">Exclusion list</span></b>
+        <span lang="ja">この番号だけは書き換えない、を番号単位で指定できます。</span>
+        <span lang="en">Mark individual numbers that must never be rewritten.</span>
+      </li>
+      <li>
+        <b><span lang="ja">発信記録</span><span lang="en">Call records</span></b>
+        <span lang="ja">各発信で何をしたか、付けなかった場合はその理由まで残ります。端末内のみ、いつでも消去できます。</span>
+        <span lang="en">See what the app did on each call, including the reason when no prefix was added. On-device only, erasable at any time.</span>
+      </li>
+      <li>
+        <b><span lang="ja">設定の書き出し / 読み込み</span><span lang="en">Export / import</span></b>
+        <span lang="ja">ルールや除外番号を JSON で保存・復元できます。</span>
+        <span lang="en">Save and restore your rules and exclusions as JSON.</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section id="safety">
+  <div class="wrap">
+    <h2><span lang="ja">安全性の設計</span><span lang="en">Safety by design</span></h2>
+    <p>
+      <span lang="ja">このアプリは発信番号を書き換えます。誤判定のコストは非対称です — プレフィックスが付かないのは割引が効かないだけですが、付けてはいけない番号に付ければ緊急通報の失敗や課金事故になります。だから迷ったら必ず「付けない」側に倒します。</span>
+      <span lang="en">This app rewrites the number you dial, and the cost of a mistake is asymmetric: failing to add a prefix merely loses a discount, while adding one where it does not belong could break an emergency call or cause an unexpected charge. When in doubt, the app always declines to rewrite.</span>
+    </p>
+    <div class="note">
+      <p><b><span lang="ja">設定に関わらず書き換えない番号</span><span lang="en">Never rewritten, whatever the settings</span></b></p>
+      <ul class="plain">
+        <li><span lang="ja">緊急通報（110 / 118 / 119 / 112）</span><span lang="en">Emergency numbers (110 / 118 / 119 / 112)</span></li>
+        <li><span lang="ja">3 桁以下のすべての番号（1XY の特番帯）</span><span lang="en">Every number of three digits or fewer (the 1XY service range)</span></li>
+        <li><span lang="ja"><code>#</code> / <code>*</code> を含む番号（#7119 #8000 #9110 などの相談ダイヤル）</span><span lang="en">Any number containing <code>#</code> or <code>*</code> (consultation lines such as #7119, #8000, #9110)</span></li>
+        <li><span lang="ja">184 / 186 で始まる番号、DTMF ポーズを含む番号</span><span lang="en">Numbers starting with 184 / 186, and numbers containing a DTMF pause</span></li>
+        <li><span lang="ja">国際番号・日本国外の番号</span><span lang="en">International numbers and numbers outside Japan</span></li>
+      </ul>
+      <p>
+        <span lang="ja">これはユーザー設定より上位の層で動き、どんなルールを書いても貫通しないことをテストで固定しています。</span>
+        <span lang="en">This guard sits above user settings, and tests pin down that no rule set can get past it.</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="wrap">
+    <h2><span lang="ja">プライバシー</span><span lang="en">Privacy</span></h2>
+    <p>
+      <span lang="ja"><b>このアプリは、いかなる情報も収集・送信しません。</b>インターネット権限（<code>android.permission.INTERNET</code>）を持っていないからです。これは方針ではなく技術的な制約で、Android は宣言されていない権限の使用を許しません。配布している APK を検査すれば、誰でも確認できます:</span>
+      <span lang="en"><b>The app does not collect or transmit any information.</b> It does not hold the internet permission (<code>android.permission.INTERNET</code>). This is a technical constraint rather than a promise: Android does not let an app use a permission it has not declared. Anyone can verify it by inspecting the distributed APK:</span>
+    </p>
+    <pre><code>aapt2 dump permissions app-release.apk</code></pre>
+    <p>
+      <span lang="ja">解析・クラッシュレポート・広告・トラッキングのいずれも組み込んでいません。設定と発信記録は端末内にのみ保存されます。</span>
+      <span lang="en">There is no analytics, no crash reporting, no advertising and no tracking. Settings and call records are stored only on your device.</span>
+    </p>
+    <p><a href="privacy.html"><span lang="ja">プライバシーポリシー全文を読む →</span><span lang="en">Read the full privacy policy →</span></a></p>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <h2><span lang="ja">入手方法と 2 つの版の違い</span><span lang="en">Where to get it, and the two editions</span></h2>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th><span lang="ja">項目</span><span lang="en">Item</span></th>
+            <th><span lang="ja">Google Play 版</span><span lang="en">Google Play edition</span></th>
+            <th><span lang="ja">GitHub 版（APK）</span><span lang="en">GitHub edition (APK)</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span lang="ja">プレフィックス付与</span><span lang="en">Prefix rewriting</span></td>
+            <td><span lang="ja">あり</span><span lang="en">Yes</span></td>
+            <td><span lang="ja">あり（同一）</span><span lang="en">Yes (identical)</span></td>
+          </tr>
+          <tr>
+            <td><span lang="ja">通話履歴の書き換え</span><span lang="en">Call log rewriting</span></td>
+            <td><span lang="ja"><b>なし</b>（履歴にはプレフィックス付きの番号が残ります。通話履歴の権限も要求しません）</span><span lang="en"><b>No</b> — the number with the prefix stays in your call history, and no call log permission is ever requested.</span></td>
+            <td><span lang="ja">あり（任意・既定 OFF。有効にしたときだけ権限を要求）</span><span lang="en">Yes — optional, off by default; permissions are requested only when you enable it.</span></td>
+          </tr>
+          <tr>
+            <td><span lang="ja">自動更新</span><span lang="en">Updates</span></td>
+            <td><span lang="ja">Play 経由で自動</span><span lang="en">Automatic via Play</span></td>
+            <td><span lang="ja">手動（Releases から）</span><span lang="en">Manual, from Releases</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note warn">
+      <p>
+        <span lang="ja"><b>使う前に知っておくこと。</b>対象は日本の電話番号への発信のみです。Android 10 以上が必要で、通話リダイレクトの役割は端末に 1 アプリしか設定できないため、他の番号書き換え・着信拒否系アプリとは併用できません。</span>
+        <span lang="en"><b>Before you install.</b> Only calls to Japanese numbers are rewritten. Android 10 or later is required, and since only one app on a device can hold the call redirection role, it cannot be used alongside other number-rewriting or call-blocking apps.</span>
+      </p>
+      <p>
+        <span lang="ja"><b>料金について。</b>プレフィックスを利用するには、各事業者との契約・申込みが別途必要です。このアプリは通話料金の割引を保証するものではありません。実際の料金はご契約の事業者の明細でご確認ください。</span>
+        <span lang="en"><b>About charges.</b> Using a prefix requires a separate contract or registration with each carrier. This app does not guarantee any discount. Please check your actual charges on your carrier bill.</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="support">
+  <div class="wrap">
+    <h2><span lang="ja">サポート</span><span lang="en">Support</span></h2>
+    <p>
+      <span lang="ja">不具合の報告・要望は GitHub の Issues へお願いします。返信は日本語・英語のどちらでも構いません。</span>
+      <span lang="en">Please report bugs and feature requests on GitHub Issues, in Japanese or English.</span>
+    </p>
+    <ul class="plain">
+      <li><a href="https://github.com/tmlksu/prefix-dialer/issues"><span lang="ja">Issues でお問い合わせ</span><span lang="en">Open an issue</span></a></li>
+      <li><a href="https://github.com/tmlksu/prefix-dialer/blob/main/CHANGELOG.md"><span lang="ja">変更履歴</span><span lang="en">Changelog</span></a></li>
+      <li><a href="https://github.com/tmlksu/prefix-dialer/blob/main/ROADMAP.md"><span lang="ja">今後の予定</span><span lang="en">Roadmap</span></a></li>
+    </ul>
+    <!-- Play Console には連絡先メールアドレスの登録が必要。公開してよいアドレスが決まったらここにも併記する。 -->
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="privacy.html"><span lang="ja">プライバシーポリシー</span><span lang="en">Privacy policy</span></a></li>
+      <li><a href="https://github.com/tmlksu/prefix-dialer"><span lang="ja">GitHub リポジトリ</span><span lang="en">GitHub repository</span></a></li>
+      <li><a href="https://github.com/tmlksu/prefix-dialer/blob/main/LICENSE"><span lang="ja">ライセンス (MIT)</span><span lang="en">License (MIT)</span></a></li>
+    </ul>
+    <p>
+      <span lang="ja">Prefix Dialer — 作者 tmlksu。Google Play および Google Play ロゴは Google LLC の商標です。</span>
+      <span lang="en">Prefix Dialer — by tmlksu. Google Play and the Google Play logo are trademarks of Google LLC.</span>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja" class="lang-ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>プライバシーポリシー / Privacy Policy — Prefix Dialer</title>
+<meta name="description" content="Prefix Dialer のプライバシーポリシー。このアプリはインターネット権限を持たず、いかなる情報も収集・送信しません。">
+<meta name="theme-color" content="#1B5E5A">
+<link rel="canonical" href="https://tmlksu.github.io/prefix-dialer/privacy.html">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Privacy Policy — Prefix Dialer">
+<meta property="og:description" content="Prefix Dialer does not collect or transmit any information. It holds no internet permission.">
+<meta property="og:url" content="https://tmlksu.github.io/prefix-dialer/privacy.html">
+<script src="assets/lang.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="assets/icon.svg" alt=""> Prefix Dialer</a>
+    <nav class="site-nav">
+      <a href="./"><span lang="ja">トップへ戻る</span><span lang="en">Back to home</span></a>
+    </nav>
+    <div class="lang-switch">
+      <button type="button" data-lang="ja" aria-pressed="true">日本語</button>
+      <button type="button" data-lang="en" aria-pressed="false">English</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap policy">
+
+<!--
+  Play の要件（PLAY-RELEASE.md §5）: ストア掲載のデベロッパー名がポリシー本文に必要 → 下の行に記載。
+  Play Console の表示名が tmlksu 以外になる場合は、この行を表示名に合わせること。
+  問い合わせ窓口は現状 GitHub Issues のみ。Play 用の連絡先メールを決めたら「お問い合わせ」節にも併記する。
+-->
+<h1><span lang="ja">プライバシーポリシー</span><span lang="en">Privacy Policy</span></h1>
+<p class="updated">
+  <span lang="ja">アプリ名: Prefix Dialer（<code>io.github.tmlksu.prefixdialer</code>）／ デベロッパー: tmlksu ／ 最終更新: 2026-08-26 ／ 日本語版が原文です。</span>
+  <span lang="en">App: Prefix Dialer (<code>io.github.tmlksu.prefixdialer</code>) &middot; Developer: tmlksu &middot; Last updated 2026-08-26 &middot; The Japanese text is the original; this is a translation.</span>
+</p>
+
+<div lang="ja">
+
+<h2>要約</h2>
+<p><b>Prefix Dialer は、いかなる情報も収集・送信しません。</b></p>
+<p>このアプリは<b>インターネット権限（<code>android.permission.INTERNET</code>）を持っていません</b>。これは方針ではなく技術的な制約です。Android は宣言されていない権限の使用を許さないため、このアプリはネットワークに接続すること自体ができません。したがって、あなたの電話番号・通話履歴・連絡先が端末の外へ出ることはありません。</p>
+<p>この事実は、配布している APK を検査すれば誰でも確認できます:</p>
+<pre><code>aapt2 dump permissions app-release.apk</code></pre>
+<p>出力に <code>android.permission.INTERNET</code> が含まれないことを確認してください。</p>
+
+<h2>開発者が受け取る情報</h2>
+<p><b>ありません。</b>開発者はあなたの利用状況を一切知ることができません。アクセス解析、クラッシュレポート送信、広告、トラッキングのいずれも組み込まれていません。</p>
+
+<h2>アプリが端末内で扱う情報</h2>
+<p>以下はすべて<b>あなたの端末の中だけ</b>で処理され、端末外へ送信されることはありません。</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>情報</th><th>用途</th><th>保存されるか</th></tr></thead>
+  <tbody>
+    <tr><td>発信しようとしている電話番号</td><td>プレフィックスを付けるかどうかの判定</td><td>発信記録として端末内に残る</td></tr>
+    <tr><td>通話履歴</td><td>発信後に番号を元に戻す（<b>任意機能。既定では無効</b>）</td><td>保存しない。書き換え後は参照しない</td></tr>
+    <tr><td>連絡先の表示名</td><td>書き換えた通話履歴に名前を補完する（<b>任意機能</b>）</td><td>保存しない</td></tr>
+    <tr><td>回線（SIM）の名前</td><td>設定画面で回線ごとの ON/OFF を表示する</td><td>保存しない</td></tr>
+    <tr><td>あなたの設定</td><td>ルール・除外番号などの保持</td><td>端末内に保存される</td></tr>
+    <tr><td>発信記録</td><td>各発信で何をしたかをあなたが確認するため</td><td>端末内に既定 100 件まで保存される</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>発信記録について</h2>
+<p>アプリ内の「発信記録」には、発信した番号・書き換え後の番号・書き換えなかった理由が残ります。これは<b>アプリ自身の動作記録</b>であり、Android の通話履歴とは別物です。</p>
+<ul class="plain">
+  <li>端末内にのみ保存されます</li>
+  <li>既定で直近 100 件まで、古いものから消えます</li>
+  <li>アプリ内の「記録を消去」でいつでも全削除できます</li>
+</ul>
+
+<h2>権限について</h2>
+<p><b>プレフィックスを付ける基本機能は、通話履歴の権限を一切必要としません。</b></p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>権限</th><th>いつ要求するか</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td>通話リダイレクト（<code>ROLE_CALL_REDIRECTION</code>）</td><td>初回セットアップ</td><td>発信直前に番号を書き換える。この機能の中核</td></tr>
+    <tr><td><code>READ_PHONE_STATE</code></td><td>「回線ごとの設定」を開いたときのみ</td><td>設定画面に回線名を表示する。<b>番号の判定には使いません</b></td></tr>
+    <tr><td><code>READ_CALL_LOG</code> / <code>WRITE_CALL_LOG</code></td><td>「通話履歴の書き換え」を有効にしたときのみ</td><td>発信後に履歴の番号を元に戻す</td></tr>
+    <tr><td><code>READ_CONTACTS</code></td><td>同上</td><td>書き換えた履歴に連絡先の名前を補完する</td></tr>
+    <tr><td><code>POST_NOTIFICATIONS</code></td><td>同上</td><td>履歴書き換え中の通知を表示する</td></tr>
+  </tbody>
+</table>
+</div>
+<p>通話履歴と連絡先の権限は、インストール直後には要求しません。あなたが「通話履歴の書き換え」を有効にした瞬間に初めて求めます。この機能を使わなければ、これらの権限は一度も要求されません。</p>
+<p class="updated">Google Play で配布している版には「通話履歴の書き換え」機能そのものがなく、<code>READ_CALL_LOG</code> / <code>WRITE_CALL_LOG</code> / <code>READ_CONTACTS</code> / <code>POST_NOTIFICATIONS</code> を宣言していません。</p>
+
+<h2>発信先への影響</h2>
+<p>このアプリは発信番号の先頭に事業者識別番号（例: <code>0063</code>）を付けます。これにより、<b>あなたが契約している電話会社の中継サービスを経由して発信されます</b>。その通話に関する情報の取り扱いは、当該電話会社のプライバシーポリシーに従います。本アプリの開発者はその通信内容に一切関与しません。</p>
+<p>なお、緊急通報番号（110 / 118 / 119 / 112）および <code>#</code> から始まる相談ダイヤル、3 桁の特番は、<b>設定内容に関わらず書き換えられません</b>。常にそのまま発信されます。</p>
+
+<h2>データの削除</h2>
+<ul class="plain">
+  <li>発信記録: アプリ内の「発信記録」→「記録を消去」</li>
+  <li>設定を含むすべてのデータ: アプリをアンインストールすると完全に削除されます</li>
+</ul>
+<p>サーバー上にデータが存在しないため、開発者への削除依頼は不要です。</p>
+
+<h2>子どもの利用について</h2>
+<p>このアプリは特に子どもを対象としたものではなく、年齢に関わる情報を収集しません。</p>
+
+<h2>本ポリシーの変更</h2>
+<p>変更した場合は、原本ファイルの更新履歴（Git のコミット履歴）に残ります。重要な変更がある場合はリリースノートでも告知します。</p>
+
+<h2>お問い合わせ</h2>
+<p><a href="https://github.com/tmlksu/prefix-dialer/issues">GitHub リポジトリの Issues</a> からご連絡ください。</p>
+<p class="updated">原本: <a href="https://github.com/tmlksu/prefix-dialer/blob/main/PRIVACY.md">PRIVACY.md</a></p>
+
+</div>
+
+<div lang="en">
+
+<h2>Summary</h2>
+<p><b>Prefix Dialer does not collect or transmit any information.</b></p>
+<p>The app does <b>not hold the internet permission</b> (<code>android.permission.INTERNET</code>). This is a technical constraint rather than a policy promise: Android does not permit an app to use a permission it has not declared, so this app is incapable of connecting to a network. Your phone numbers, call log and contacts therefore cannot leave your device.</p>
+<p>Anyone can verify this by inspecting the distributed APK:</p>
+<pre><code>aapt2 dump permissions app-release.apk</code></pre>
+<p>Confirm that <code>android.permission.INTERNET</code> does not appear in the output.</p>
+
+<h2>What the developer receives</h2>
+<p><b>Nothing.</b> The developer has no way of knowing how you use the app. There is no analytics, no crash reporting, no advertising and no tracking.</p>
+
+<h2>What the app handles on your device</h2>
+<p>All of the following is processed <b>only on your device</b> and is never transmitted.</p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Data</th><th>Purpose</th><th>Stored?</th></tr></thead>
+  <tbody>
+    <tr><td>The number you are about to dial</td><td>Deciding whether to add a prefix</td><td>Kept on device as a call record</td></tr>
+    <tr><td>Call log</td><td>Restoring the original number after a call (<b>optional, off by default</b>)</td><td>Not stored</td></tr>
+    <tr><td>Contact display names</td><td>Filling in the name on a rewritten call log entry (<b>optional</b>)</td><td>Not stored</td></tr>
+    <tr><td>SIM line names</td><td>Showing per-line switches in settings</td><td>Not stored</td></tr>
+    <tr><td>Your settings</td><td>Rules, exclusions and so on</td><td>Stored on device</td></tr>
+    <tr><td>Call records</td><td>So you can check what the app did on each call</td><td>Stored on device, 100 entries by default</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Call records</h2>
+<p>The in-app "call records" screen lists the number dialled, the rewritten number, and the reason when no prefix was added. This is <b>the app's own activity log</b>, distinct from Android's call history.</p>
+<ul class="plain">
+  <li>Stored only on your device</li>
+  <li>Limited to the 100 most recent entries by default; older entries are dropped</li>
+  <li>Can be erased at any time from within the app</li>
+</ul>
+
+<h2>Permissions</h2>
+<p><b>The core feature — adding a prefix — requires no call log permission at all.</b></p>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Permission</th><th>When requested</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>Call redirection role</td><td>Initial setup</td><td>Rewriting the number just before dialling. The core of the app</td></tr>
+    <tr><td><code>READ_PHONE_STATE</code></td><td>Only when you open per-line settings</td><td>Showing line names in settings. <b>Not used to decide anything about a number</b></td></tr>
+    <tr><td><code>READ_CALL_LOG</code> / <code>WRITE_CALL_LOG</code></td><td>Only when you enable call log rewriting</td><td>Restoring the original number after a call</td></tr>
+    <tr><td><code>READ_CONTACTS</code></td><td>Same as above</td><td>Filling in the contact name on a rewritten entry</td></tr>
+    <tr><td><code>POST_NOTIFICATIONS</code></td><td>Same as above</td><td>Showing a notification while rewriting</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Call log and contacts permissions are never requested at install time. They are requested only at the moment you enable call log rewriting. If you do not use that feature, they are never requested at all.</p>
+<p class="updated">The edition distributed on Google Play has no call log rewriting feature at all and declares none of <code>READ_CALL_LOG</code>, <code>WRITE_CALL_LOG</code>, <code>READ_CONTACTS</code> or <code>POST_NOTIFICATIONS</code>.</p>
+
+<h2>Effect on your calls</h2>
+<p>The app prepends a carrier access code (for example <code>0063</code>) to the number you dial, which routes the call through the carrier service you have subscribed to. How that carrier handles information about the call is governed by that carrier's own privacy policy. The developer of this app has no involvement in it.</p>
+<p>Emergency numbers (110 / 118 / 119 / 112), <code>#</code> consultation lines and three-digit service numbers are <b>never rewritten, regardless of your settings</b>. They are always dialled as-is.</p>
+
+<h2>Deleting your data</h2>
+<ul class="plain">
+  <li>Call records: in-app "Call records" &rarr; "Clear records"</li>
+  <li>Everything including settings: uninstalling the app removes it completely</li>
+</ul>
+<p>No data exists on any server, so there is no deletion request to make.</p>
+
+<h2>Children</h2>
+<p>This app is not directed at children and does not collect any age-related information.</p>
+
+<h2>Changes to this policy</h2>
+<p>Any change is recorded in the source file's history (the Git commit log). Significant changes are also announced in the release notes.</p>
+
+<h2>Contact</h2>
+<p>Please <a href="https://github.com/tmlksu/prefix-dialer/issues">open an issue on the GitHub repository</a>.</p>
+<p class="updated">Source of this text: <a href="https://github.com/tmlksu/prefix-dialer/blob/main/PRIVACY.md">PRIVACY.md</a></p>
+
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <ul>
+      <li><a href="./"><span lang="ja">トップへ戻る</span><span lang="en">Back to home</span></a></li>
+      <li><a href="https://github.com/tmlksu/prefix-dialer"><span lang="ja">GitHub リポジトリ</span><span lang="en">GitHub repository</span></a></li>
+    </ul>
+    <p>Prefix Dialer — tmlksu</p>
+  </div>
+</footer>
+
+</body>
+</html>
