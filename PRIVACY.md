@@ -1,6 +1,9 @@
 # プライバシーポリシー / Privacy Policy
 
-**Prefix Dialer**
+**Prefix Dialer**（`io.github.tmlksu.prefixdialer`）
+
+デベロッパー: **tmlksu**（Google Play / GitHub 上の表示名）
+Developer: **tmlksu** (the display name used on Google Play and GitHub)
 
 最終更新: 2026-09-18
 

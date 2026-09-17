@@ -39,15 +39,15 @@
 -->
 <h1><span lang="ja">プライバシーポリシー</span><span lang="en">Privacy Policy</span></h1>
 <p class="updated">
-  <span lang="ja">アプリ名: Prefix Dialer（<code>io.github.tmlksu.prefixdialer</code>）／ デベロッパー: tmlksu ／ 最終更新: 2026-08-26 ／ 日本語版が原文です。</span>
-  <span lang="en">App: Prefix Dialer (<code>io.github.tmlksu.prefixdialer</code>) &middot; Developer: tmlksu &middot; Last updated 2026-08-26 &middot; The Japanese text is the original; this is a translation.</span>
+  <span lang="ja">アプリ名: Prefix Dialer（<code>io.github.tmlksu.prefixdialer</code>）／ デベロッパー: tmlksu（Google Play / GitHub 上の表示名）／ 最終更新: 2026-09-18 ／ 日本語版が原文です。</span>
+  <span lang="en">App: Prefix Dialer (<code>io.github.tmlksu.prefixdialer</code>) &middot; Developer: tmlksu (the display name used on Google Play and GitHub) &middot; Last updated 2026-09-18 &middot; The Japanese text is the original; this is a translation.</span>
 </p>
 
 <div lang="ja">
 
 <h2>要約</h2>
 <p><b>Prefix Dialer は、いかなる情報も収集・送信しません。</b></p>
-<p>このアプリは<b>インターネット権限（<code>android.permission.INTERNET</code>）を持っていません</b>。これは方針ではなく技術的な制約です。Android は宣言されていない権限の使用を許さないため、このアプリはネットワークに接続すること自体ができません。したがって、あなたの電話番号・通話履歴・連絡先が端末の外へ出ることはありません。</p>
+<p>このアプリは<b>インターネット権限（<code>android.permission.INTERNET</code>）を持っていません</b>。これは方針ではなく技術的な制約です。Android は宣言されていない権限の使用を許さないため、このアプリはネットワークに接続すること自体ができません。したがって、あなたの電話番号・通話履歴・連絡先をアプリ自身が端末の外へ送ることはありません。ただし、あなたの設定は Android の自動バックアップ（Android OS があなたの Google アカウントへ行うバックアップ / 機種変更時の転送）の対象になります。これは OS の機能であり、アプリ自身が送信するものではありません。発信記録は自動バックアップの対象外です。</p>
 <p>この事実は、配布している APK を検査すれば誰でも確認できます:</p>
 <pre><code>aapt2 dump permissions app-release.apk</code></pre>
 <p>出力に <code>android.permission.INTERNET</code> が含まれないことを確認してください。</p>
@@ -56,7 +56,7 @@
 <p><b>ありません。</b>開発者はあなたの利用状況を一切知ることができません。アクセス解析、クラッシュレポート送信、広告、トラッキングのいずれも組み込まれていません。</p>
 
 <h2>アプリが端末内で扱う情報</h2>
-<p>以下はすべて<b>あなたの端末の中だけ</b>で処理され、端末外へ送信されることはありません。</p>
+<p>以下はすべて<b>あなたの端末の中だけ</b>で処理され、アプリ自身が端末外へ送信することはありません。ただし、あなたの設定は Android の自動バックアップ（Google アカウントへのバックアップ / 機種変更時の転送）の対象になります。これは Android OS が行うもので、発信記録は対象外です。</p>
 <div class="table-scroll">
 <table>
   <thead><tr><th>情報</th><th>用途</th><th>保存されるか</th></tr></thead>
@@ -65,7 +65,7 @@
     <tr><td>通話履歴</td><td>発信後に番号を元に戻す（<b>任意機能。既定では無効</b>）</td><td>保存しない。書き換え後は参照しない</td></tr>
     <tr><td>連絡先の表示名</td><td>書き換えた通話履歴に名前を補完する（<b>任意機能</b>）</td><td>保存しない</td></tr>
     <tr><td>回線（SIM）の名前</td><td>設定画面で回線ごとの ON/OFF を表示する</td><td>保存しない</td></tr>
-    <tr><td>あなたの設定</td><td>ルール・除外番号などの保持</td><td>端末内に保存される</td></tr>
+    <tr><td>あなたの設定</td><td>ルール・除外番号などの保持</td><td>端末内に保存される。Android の自動バックアップ（Google アカウントへのバックアップ / 機種変更時の転送）の対象。発信記録は対象外</td></tr>
     <tr><td>発信記録</td><td>各発信で何をしたかをあなたが確認するため</td><td>端末内に既定 100 件まで保存される</td></tr>
   </tbody>
 </table>
@@ -75,6 +75,7 @@
 <p>アプリ内の「発信記録」には、発信した番号・書き換え後の番号・書き換えなかった理由が残ります。これは<b>アプリ自身の動作記録</b>であり、Android の通話履歴とは別物です。</p>
 <ul class="plain">
   <li>端末内にのみ保存されます</li>
+  <li>Android の自動バックアップ（Google アカウントへのバックアップ / 機種変更時の転送）からは除外しているため、バックアップや機種変更時の転送には含まれません</li>
   <li>既定で直近 100 件まで、古いものから消えます</li>
   <li>アプリ内の「記録を消去」でいつでも全削除できます</li>
 </ul>
@@ -123,7 +124,7 @@
 
 <h2>Summary</h2>
 <p><b>Prefix Dialer does not collect or transmit any information.</b></p>
-<p>The app does <b>not hold the internet permission</b> (<code>android.permission.INTERNET</code>). This is a technical constraint rather than a policy promise: Android does not permit an app to use a permission it has not declared, so this app is incapable of connecting to a network. Your phone numbers, call log and contacts therefore cannot leave your device.</p>
+<p>The app does <b>not hold the internet permission</b> (<code>android.permission.INTERNET</code>). This is a technical constraint rather than a policy promise: Android does not permit an app to use a permission it has not declared, so this app is incapable of connecting to a network. Your phone numbers, call log and contacts therefore cannot be sent off your device by the app itself. The only exception is your settings, which are subject to Android Auto Backup (performed by Android OS to your Google account, including device-to-device transfer when you change phones). This is done by the OS, not by the app. Call records are excluded from Auto Backup.</p>
 <p>Anyone can verify this by inspecting the distributed APK:</p>
 <pre><code>aapt2 dump permissions app-release.apk</code></pre>
 <p>Confirm that <code>android.permission.INTERNET</code> does not appear in the output.</p>
@@ -132,7 +133,7 @@
 <p><b>Nothing.</b> The developer has no way of knowing how you use the app. There is no analytics, no crash reporting, no advertising and no tracking.</p>
 
 <h2>What the app handles on your device</h2>
-<p>All of the following is processed <b>only on your device</b> and is never transmitted.</p>
+<p>All of the following is processed <b>only on your device</b> and is never transmitted by the app itself. The only exception is your settings, which are subject to Android Auto Backup (backup to your Google account / transfer when changing devices, performed by Android OS). Call records are excluded.</p>
 <div class="table-scroll">
 <table>
   <thead><tr><th>Data</th><th>Purpose</th><th>Stored?</th></tr></thead>
@@ -141,7 +142,7 @@
     <tr><td>Call log</td><td>Restoring the original number after a call (<b>optional, off by default</b>)</td><td>Not stored</td></tr>
     <tr><td>Contact display names</td><td>Filling in the name on a rewritten call log entry (<b>optional</b>)</td><td>Not stored</td></tr>
     <tr><td>SIM line names</td><td>Showing per-line switches in settings</td><td>Not stored</td></tr>
-    <tr><td>Your settings</td><td>Rules, exclusions and so on</td><td>Stored on device</td></tr>
+    <tr><td>Your settings</td><td>Rules, exclusions and so on</td><td>Stored on device. Subject to Android Auto Backup (backup to your Google account / transfer when changing devices). Call records are excluded</td></tr>
     <tr><td>Call records</td><td>So you can check what the app did on each call</td><td>Stored on device, 100 entries by default</td></tr>
   </tbody>
 </table>
@@ -151,6 +152,7 @@
 <p>The in-app "call records" screen lists the number dialled, the rewritten number, and the reason when no prefix was added. This is <b>the app's own activity log</b>, distinct from Android's call history.</p>
 <ul class="plain">
   <li>Stored only on your device</li>
+  <li>Excluded from Android Auto Backup (backup to your Google account / transfer when changing devices), so call records are not included in backups or device transfers</li>
   <li>Limited to the 100 most recent entries by default; older entries are dropped</li>
   <li>Can be erased at any time from within the app</li>
 </ul>
