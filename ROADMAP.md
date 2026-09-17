@@ -38,7 +38,7 @@ https://github.com/tmlksu/prefix-dialer/releases/tag/v1.0.0
 - [x] プライバシーポリシーの本文と公開先 URL（D-03）
 - [x] applicationId の確定（D-10）— `io.github.tmlksu.prefixdialer`
 - [x] GitHub Releases での配布
-- [ ] Play への提出（D-03 / D-20）
+- [ ] Play への提出（D-03 / D-20）— 要件と手順は [PLAY-RELEASE.md](PLAY-RELEASE.md)、掲載文の草案は [PLAY-LISTING.md](PLAY-LISTING.md)。**targetSdk 36 への引き上げが先決**（2026-08-31 から新規アプリは API 36 必須）
 
 ### プリセットの拡充
 
