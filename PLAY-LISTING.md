@@ -277,13 +277,13 @@ Google Play での初回リリースです。
 <en-US>
 First release on Google Play.
 
-• Automatically adds your carrier prefix when calling Japanese mobile, landline and VoIP numbers
+• Adds your carrier prefix automatically to Japanese mobile, landline and VoIP calls
 • Presets: G-Call, Rakuten Denwa
-• Emergency numbers, 3-digit service numbers and numbers containing # or * are never rewritten, whatever the settings
-• Per-SIM on/off, auto-pause while roaming, per-number exclusions
-• Call records show what the app did on each call, and why a prefix was not added
-• No internet permission. Nothing leaves your device
+• Emergency and 3-digit service numbers are never rewritten
+• Per-SIM on/off, auto-pause while roaming, number exclusions
+• Call records show what happened on each call
+• No internet permission; nothing leaves your device
 
-This Play edition does not include call log rewriting; the prefixed number stays in your call history. If you need it, use the edition distributed on GitHub.
+This edition does not rewrite the call log. For that, use the GitHub edition.
 </en-US>
 ```
