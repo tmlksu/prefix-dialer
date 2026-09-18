@@ -254,3 +254,36 @@ Play 提出の要件・チェックリスト・スケジュールは `PLAY-RELEA
 - Play 版の実機確認（H-05 相当: 署名済み play リリースでの発信・設定画面・発信記録）は Console 提出前に実施すること。
 - targetSdk 36 への引き上げが必須（2026-08-31 から新規アプリは API 36 必須。PLAY-RELEASE.md §1）。提出作業より先決。
 - `allowBackup` の判断（現状 `true` では発信記録が Google ドライブへ送られ PRIVACY.md と不整合。`false` 推奨。PLAY-RELEASE.md P-01）。
+
+---
+
+## 9. リリースノート（Play Console「このリリースの新機能」・各 500 字以内）
+
+初回リリース用。GitHub 版から見た変更点（targetSdk 36 など）は Play ユーザーには初回なので書かない。
+
+```
+<ja-JP>
+Google Play での初回リリースです。
+
+・発信時に、携帯 / 固定 / IP電話の種別ごとに事業者プレフィックスを自動で付けます
+・プリセット: G-Call、楽天でんわ
+・緊急通報・3桁の特番・# や * を含む番号は、設定に関わらず書き換えません
+・回線（SIM）ごとの ON/OFF、ローミング中の自動停止、番号単位の除外
+・発信記録で、各発信で何をしたか（付けなかった理由）を確認できます
+・インターネット権限なし。情報を外部に送信しません
+
+この Play 版には「通話履歴の書き換え」機能はありません。発信後の履歴にはプレフィックス付きの番号が残ります。必要な場合は GitHub で配布している版をご利用ください。
+</ja-JP>
+<en-US>
+First release on Google Play.
+
+• Automatically adds your carrier prefix when calling Japanese mobile, landline and VoIP numbers
+• Presets: G-Call, Rakuten Denwa
+• Emergency numbers, 3-digit service numbers and numbers containing # or * are never rewritten, whatever the settings
+• Per-SIM on/off, auto-pause while roaming, per-number exclusions
+• Call records show what the app did on each call, and why a prefix was not added
+• No internet permission. Nothing leaves your device
+
+This Play edition does not include call log rewriting; the prefixed number stays in your call history. If you need it, use the edition distributed on GitHub.
+</en-US>
+```
